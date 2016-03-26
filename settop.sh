@@ -28,8 +28,10 @@ else
 fi
 
 pprint "Creating links to ~/.dotfiles..."
-echo "linking to gitconfig"
-ln -s ~/.dotfiles/gitconfig ~/.gitconfig
+~/.dotfiles/bin/install
+
+#echo "linking to gitconfig"
+#ln -s ~/.dotfiles/gitconfig ~/.gitconfig
 
 #brew install neovim
 #brew install rbenv
