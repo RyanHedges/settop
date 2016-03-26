@@ -1,7 +1,12 @@
 #Settop a.k.a Set[up Lap]top
 
+This is a script for setting up my laptop. It works in conjunction with my
+[dotfiles repo](https://github.com/RyanHedges/dotfiles)
+
 ### Github setup
-1. Set up [ssh key for github](https://help.github.com/articles/which-remote-url-should-i-use/#cloning-with-ssh-urls)
+
+1. Set up [ssh key for
+github](https://help.github.com/articles/which-remote-url-should-i-use/#cloning-with-ssh-urls)
 
   ```bash
   $ source settop_ssh.sh
@@ -12,4 +17,13 @@
   settings. If there is something in the ssh directory, it will not generate a
   key.
 
-2. [Add the key to Github](https://help.github.com/articles/adding-a-new-ssh-key-to-your-github-account/)
+2. [Add the key to
+Github](https://help.github.com/articles/adding-a-new-ssh-key-to-your-github-account/)
+
+### Setup laptop
+
+1. Run the settop script
+
+  ```bash
+  $ sh settop.sh
+  ```
