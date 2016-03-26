@@ -15,8 +15,21 @@ fi
 pprint "Updating Homebrew..."
 brew update
 
-pprint "Installing git..."
+pprint "Installing Hombrew packages"
+echo "Installing git..."
 brew install git
+
+pprint "Checking for ~/.dotfiles"
+if [ ! -d ~/.dotfiles ]; then
+  echo "Cloning RyanHedges/dotfiles into ~/.dotfiles"
+  git clone git@github.com:RyanHedges/dotfiles.git ~/.dotfiles
+else
+  echo "Using existing ~/.dotfiles"
+fi
+
+pprint "Creating links to ~/.dotfiles..."
+echo "linking to gitconfig"
+ln -s ~/.dotfiles/gitconfig ~/.gitconfig
 
 #brew install neovim
 #brew install rbenv
