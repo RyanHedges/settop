@@ -3,39 +3,103 @@ pprint() {
   local msg="$1"; shift
   printf "\n$msg\n"
 }
+
+grnprint() {
+  local msg="$1"; shift
+  printf "\e[92m$msg\e[0m\n"
+}
 set -e
 
-pprint "Installing Homebrew..."
+pprint ""
+grnprint "============================================================"
+grnprint "==      ===        ==        ==        ====    ====       =="
+grnprint "=  ====  ==  ===========  ========  ======  ==  ===  ====  ="
+grnprint "=  ====  ==  ===========  ========  =====  ====  ==  ====  ="
+grnprint "==  =======  ===========  ========  =====  ====  ==  ====  ="
+grnprint "====  =====      =======  ========  =====  ====  ==       =="
+grnprint "======  ===  ===========  ========  =====  ====  ==  ======="
+grnprint "=  ====  ==  ===========  ========  =====  ====  ==  ======="
+grnprint "=  ====  ==  ===========  ========  ======  ==  ===  ======="
+grnprint "==      ===        =====  ========  =======    ====  ======="
+grnprint "============================================================"
+
+# ---- Install Homebrew ----
+# --------------------------
+pprint "Checking if Homebrew needs to be installed..."
 if ! command -v brew >/dev/null; then
+  grnprint "Installing Homebrew..."
   /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
 else
-  pprint "Homebrew already installed"
+  grnprint "Homebrew already installed"
 fi
 
-pprint "Updating Homebrew..."
+# ---- Brew the things ----
+# -------------------------
+pprint "Installing Hombrew packages"
+
+grnprint "Updating Homebrew..."
 brew update
 
-pprint "Installing Hombrew packages"
-echo "Installing git..."
+grnprint "Installing git..."
 brew install git
 
-pprint "Checking for ~/.dotfiles"
+grnprint "Installing rbenv..."
+brew install rbenv
+
+grnprint "Installing ruby-build..."
+brew install ruby-build
+
+grnprint "Installing Zsh..."
+brew install zsh
+
+# ---- Install Dotfiles ----
+# --------------------------
+pprint "Checking for ~/.dotfiles..."
 if [ ! -d ~/.dotfiles ]; then
-  echo "Cloning RyanHedges/dotfiles into ~/.dotfiles"
+  grnprint "Cloning RyanHedges/dotfiles into ~/.dotfiles"
   git clone git@github.com:RyanHedges/dotfiles.git ~/.dotfiles
 else
-  echo "Using existing ~/.dotfiles"
+  grnprint "Using existing ~/.dotfiles"
 fi
 
 pprint "Creating links to ~/.dotfiles..."
 ~/.dotfiles/bin/install
 
-#echo "linking to gitconfig"
-#ln -s ~/.dotfiles/gitconfig ~/.gitconfig
+# ---- Set shell to Zsh ----
+# --------------------------
+pprint "Checking if zsh is added to /etc/shells"
+if ! grep -Fq "$(which zsh)" "/etc/shells"; then
+  grnprint "Adding $(which zsh) to /etc/shells"
+  sudo sh -c "echo '$(which zsh)' >> /etc/shells"
+else
+  grnprint "zsh already in /etc/shells"
+fi
 
-#brew install neovim
-#brew install rbenv
-#brew install ruby-build
-#brew install postgres
-#
-#ruby_version="$(rbenv install -l | grep -v - | tail -l | sed -e 's/^ *//')"
+case "$SHELL" in
+  */zsh) : ;;
+  *)
+    chsh -s "$(which zsh)"
+    ;;
+esac
+
+# ---- Setup Ruby ----
+# --------------------
+find_ruby_version() {
+  rbenv install -l | grep -v - | tail -1 | sed -e 's/^ *//'
+}
+ruby_version="$(find_ruby_version)"
+
+pprint "Setting up ruby..."
+eval "$(rbenv init -)"
+if ! rbenv versions | grep -Fq "$ruby_version"; then
+  grnprint "Installing ruby version $($ruby_version)..."
+  rbenv install "$ruby_version"
+else
+  grnprint "Ruby version $ruby_version already installed"
+fi
+
+grnprint "Setting global ruby version to $ruby_version"
+rbenv global "$ruby_version"
+
+grnprint "Setting shell ruby version to $ruby_version"
+rbenv shell "$ruby_version"
