@@ -8,6 +8,7 @@ grnprint() {
   local msg="$1"; shift
   printf "\e[92m$msg\e[0m\n"
 }
+
 set -e
 
 pprint ""
@@ -51,6 +52,9 @@ brew install ruby-build
 
 grnprint "Installing Zsh..."
 brew install zsh
+
+grnprint "Installing Vim..."
+brew install vim --override-system-vi
 
 # ---- Install Dotfiles ----
 # --------------------------
@@ -103,3 +107,25 @@ rbenv global "$ruby_version"
 
 grnprint "Setting shell ruby version to $ruby_version"
 rbenv shell "$ruby_version"
+
+# ---- Install Gems ----
+# ----------------------
+gem_install_or_update() {
+  if gem list "$1" --installed > /dev/null; then
+    grnprint "Updating $@"
+    gem update "$@"
+  else
+    grnprint "Installing $@"
+    gem install "$@"
+    rbenv rehash
+  fi
+}
+
+pprint "Installing Gems..."
+grnprint "Updating RubyGems system software"
+gem update --system
+
+gem_install_or_update 'bundler'
+
+pprint ""
+grnprint "Your system is now settop"
