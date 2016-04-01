@@ -88,6 +88,15 @@ case "$SHELL" in
     ;;
 esac
 
+# ---- Directory Structure ----
+# -----------------------------
+pprint "Setting up directory structure..."
+if [ ! -e "$HOME/projects" ]
+  then
+    grnprint "Creating projects directory"
+    mkdir $HOME/projects
+fi
+
 # ---- Setup Ruby ----
 # --------------------
 find_ruby_version() {
