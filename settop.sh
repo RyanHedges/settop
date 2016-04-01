@@ -47,8 +47,10 @@ brew install git
 grnprint "Installing rbenv..."
 brew install rbenv
 
+if ! command -v brew ls --version ruby-build >/dev/null; then
 grnprint "Installing ruby-build..."
 brew install ruby-build
+fi
 
 grnprint "Installing Zsh..."
 brew install zsh
