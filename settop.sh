@@ -142,5 +142,12 @@ gem update --system
 
 gem_install_or_update 'bundler'
 
+# ---- Finder Setup ----
+# ----------------------
+pprint "Setting up Finder..."
+grnprint "Showing hidden files"
+defaults write com.apple.finder AppleShowAllFiles YES
+killall Finder
+
 pprint ""
 grnprint "Your system is now settop"
