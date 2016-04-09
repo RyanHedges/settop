@@ -41,8 +41,10 @@ pprint "Installing Hombrew packages"
 grnprint "Updating Homebrew..."
 brew update
 
+if ! command -v brew ls --version git >/dev/null; then
 grnprint "Installing git..."
 brew install git
+fi
 
 grnprint "Installing rbenv..."
 brew install rbenv
@@ -55,8 +57,10 @@ fi
 grnprint "Installing Zsh..."
 brew install zsh
 
+if ! command -v brew ls --version vim >/dev/null; then
 grnprint "Installing Vim..."
 brew install vim --override-system-vi
+fi
 
 # ---- Install Dotfiles ----
 # --------------------------
