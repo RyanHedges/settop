@@ -75,6 +75,12 @@ fi
 pprint "Creating links to ~/.dotfiles..."
 ~/.dotfiles/bin/install
 
+# ---- Bootstrap Vim ----
+# -----------------------
+pprint "Bootstrapping vim..."
+grnprint "Running .dotfiles vim_strap"
+source ~/.dotfiles/bin/vim_strap
+
 # ---- Set shell to Zsh ----
 # --------------------------
 pprint "Checking if zsh is added to /etc/shells"
