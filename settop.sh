@@ -4,107 +4,123 @@ pprint() {
   printf "\n$msg\n"
 }
 
-grnprint() {
+grn_print() {
   local msg="$1"; shift
-  printf "\e[92m$msg\e[0m\n"
+  printf "\e[32m$msg\e[0m\n"
+}
+
+yel_print() {
+  local msg="$1"; shift
+  printf "\e[33m$msg\e[0m\n"
+}
+
+blue_pprint() {
+  local msg="$1"; shift
+  printf "\n\e[34m$msg\e[0m\n"
 }
 
 set -e
 
 pprint ""
-grnprint "============================================================"
-grnprint "==      ===        ==        ==        ====    ====       =="
-grnprint "=  ====  ==  ===========  ========  ======  ==  ===  ====  ="
-grnprint "=  ====  ==  ===========  ========  =====  ====  ==  ====  ="
-grnprint "==  =======  ===========  ========  =====  ====  ==  ====  ="
-grnprint "====  =====      =======  ========  =====  ====  ==       =="
-grnprint "======  ===  ===========  ========  =====  ====  ==  ======="
-grnprint "=  ====  ==  ===========  ========  =====  ====  ==  ======="
-grnprint "=  ====  ==  ===========  ========  ======  ==  ===  ======="
-grnprint "==      ===        =====  ========  =======    ====  ======="
-grnprint "============================================================"
+grn_print "============================================================"
+grn_print "==      ===        ==        ==        ====    ====       =="
+grn_print "=  ====  ==  ===========  ========  ======  ==  ===  ====  ="
+grn_print "=  ====  ==  ===========  ========  =====  ====  ==  ====  ="
+grn_print "==  =======  ===========  ========  =====  ====  ==  ====  ="
+grn_print "====  =====      =======  ========  =====  ====  ==       =="
+grn_print "======  ===  ===========  ========  =====  ====  ==  ======="
+grn_print "=  ====  ==  ===========  ========  =====  ====  ==  ======="
+grn_print "=  ====  ==  ===========  ========  ======  ==  ===  ======="
+grn_print "==      ===        =====  ========  =======    ====  ======="
+grn_print "============================================================"
 
 # ---- Install Homebrew ----
 # --------------------------
-pprint "Checking if Homebrew needs to be installed..."
+blue_pprint "Installing Homebrew..."
 if ! command -v brew >/dev/null; then
-  grnprint "Installing Homebrew..."
+  grn_print "Installing Homebrew..."
   /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
 else
-  grnprint "Homebrew already installed"
+  yel_print "Homebrew already installed"
 fi
 
 # ---- Brew the things ----
 # -------------------------
-pprint "Installing Hombrew packages"
+blue_pprint "Installing Hombrew packages"
 
-grnprint "Updating Homebrew..."
+grn_print "Updating Homebrew..."
 brew update
 
-if ! command -v brew ls --version git >/dev/null; then
-grnprint "Installing git..."
-brew install git
-fi
+brew_install() {
+  local pkg="$1"; shift
+  if ! command -v brew ls --version $pkg >/dev/null; then
+    grn_print "Installing $pkg..."
+    brew install $pkg
+  else
+    yel_print "$pkg already installed"
+  fi
+}
 
-grnprint "Installing rbenv..."
-brew install rbenv
-
-if ! command -v brew ls --version ruby-build >/dev/null; then
-grnprint "Installing ruby-build..."
-brew install ruby-build
-fi
-
-grnprint "Installing Zsh..."
-brew install zsh
+brew_install git
+brew_install rbenv
+brew_install ruby-build
+brew_install zsh
 
 if ! command -v brew ls --version vim >/dev/null; then
-grnprint "Installing Vim..."
-brew install vim --override-system-vi
+  grn_print "Installing Vim..."
+  brew install vim --override-system-vi
 fi
 
 # ---- Install Dotfiles ----
 # --------------------------
-pprint "Checking for ~/.dotfiles..."
+blue_pprint "Installing Dotfiles..."
+grn_print "Checking for ~/.dotfiles..."
 if [ ! -d ~/.dotfiles ]; then
-  grnprint "Cloning RyanHedges/dotfiles into ~/.dotfiles"
+  grn_print "Cloning RyanHedges/dotfiles into ~/.dotfiles"
   git clone git@github.com:RyanHedges/dotfiles.git ~/.dotfiles
 else
-  grnprint "Using existing ~/.dotfiles"
+  yel_print "Using existing ~/.dotfiles"
 fi
 
-pprint "Creating links to ~/.dotfiles..."
+blue_pprint "Creating links to ~/.dotfiles..."
 ~/.dotfiles/bin/install
 
 # ---- Bootstrap Vim ----
 # -----------------------
-pprint "Bootstrapping vim..."
-grnprint "Running .dotfiles vim_strap"
+blue_pprint "Bootstrapping vim..."
+grn_print "Running .dotfiles vim_strap"
 source ~/.dotfiles/bin/vim_strap
 
 # ---- Set shell to Zsh ----
 # --------------------------
-pprint "Checking if zsh is added to /etc/shells"
+blue_pprint "Setup zsh..."
+grn_print "Checking if zsh is added to /etc/shells"
 if ! grep -Fq "$(which zsh)" "/etc/shells"; then
-  grnprint "Adding $(which zsh) to /etc/shells"
+  grn_print "Adding $(which zsh) to /etc/shells"
   sudo sh -c "echo '$(which zsh)' >> /etc/shells"
 else
-  grnprint "zsh already in /etc/shells"
+  yel_print "zsh already in /etc/shells"
 fi
 
+grn_print "Ensuring shell is using zsh..."
 case "$SHELL" in
-  */zsh) : ;;
+  */zsh)
+    yel_print "Shell already using zsh"
+    ;;
   *)
+    grn_print "Changing shell to zsh"
     chsh -s "$(which zsh)"
     ;;
 esac
 
 # ---- Directory Structure ----
 # -----------------------------
-pprint "Setting up directory structure..."
-if [ ! -e "$HOME/projects" ]
-  then
-    grnprint "Creating projects directory"
-    mkdir $HOME/projects
+blue_pprint "Setting up directory structure..."
+if [ ! -e "$HOME/projects" ]; then
+  grn_print "Creating projects directory"
+  mkdir $HOME/projects
+else
+  yel_print "$HOME/projects already exists"
 fi
 
 # ---- Setup Ruby ----
@@ -114,46 +130,46 @@ find_ruby_version() {
 }
 ruby_version="$(find_ruby_version)"
 
-pprint "Setting up ruby..."
+blue_pprint "Setting up ruby..."
 eval "$(rbenv init -)"
 if ! rbenv versions | grep -Fq "$ruby_version"; then
-  grnprint "Installing ruby version $($ruby_version)..."
+  grn_print "Installing ruby version $($ruby_version)..."
   rbenv install "$ruby_version"
 else
-  grnprint "Ruby version $ruby_version already installed"
+  yel_print "Ruby version $ruby_version already installed"
 fi
 
-grnprint "Setting global ruby version to $ruby_version"
+grn_print "Setting global ruby version to $ruby_version"
 rbenv global "$ruby_version"
 
-grnprint "Setting shell ruby version to $ruby_version"
+grn_print "Setting shell ruby version to $ruby_version"
 rbenv shell "$ruby_version"
 
 # ---- Install Gems ----
 # ----------------------
 gem_install_or_update() {
   if gem list "$1" --installed > /dev/null; then
-    grnprint "Updating $@"
+    grn_print "Updating $@"
     gem update "$@"
   else
-    grnprint "Installing $@"
+    grn_print "Installing $@"
     gem install "$@"
     rbenv rehash
   fi
 }
 
-pprint "Installing Gems..."
-grnprint "Updating RubyGems system software"
+blue_pprint "Installing Gems..."
+grn_print "Updating RubyGems system software"
 gem update --system
 
 gem_install_or_update 'bundler'
 
 # ---- Finder Setup ----
 # ----------------------
-pprint "Setting up Finder..."
-grnprint "Showing hidden files"
+blue_pprint "Setting up Finder..."
+grn_print "Showing hidden files"
 defaults write com.apple.finder AppleShowAllFiles YES
 killall Finder
 
 pprint ""
-grnprint "Your system is now settop"
+grn_print "Your system is now settop"
