@@ -171,5 +171,15 @@ grn_print "Showing hidden files"
 defaults write com.apple.finder AppleShowAllFiles YES
 killall Finder
 
+# ---- Font Setup ----
+# --------------------
+blue_pprint "Installing Fonts..."
+grn_print "Installing Mononoki font"
+curl -o ~/Downloads/mononoki.zip -Lk https://raw.githubusercontent.com/madmalik/mononoki/master/export/mononoki.zip
+unzip -j ~/Downloads/mononoki.zip -d ~/Library/Fonts
+rm ~/Downloads/mononoki.zip
+
+# ---- Finish Setup ----
+# ----------------------
 pprint ""
 grn_print "Your system is now settop"
