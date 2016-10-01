@@ -174,10 +174,14 @@ killall Finder
 # ---- Font Setup ----
 # --------------------
 blue_pprint "Installing Fonts..."
-grn_print "Installing Mononoki font"
-curl -o ~/Downloads/mononoki.zip -Lk https://raw.githubusercontent.com/madmalik/mononoki/master/export/mononoki.zip
-unzip -j ~/Downloads/mononoki.zip -d ~/Library/Fonts
-rm ~/Downloads/mononoki.zip
+  if [ ! -f ~/Library/Fonts/mononoki-Regular.ttf ]; then
+    grn_print "Installing Mononoki font"
+    curl -o ~/Downloads/mononoki.zip -Lk https://raw.githubusercontent.com/madmalik/mononoki/master/export/mononoki.zip
+    unzip -j ~/Downloads/mononoki.zip -d ~/Library/Fonts
+    rm ~/Downloads/mononoki.zip
+  else
+    yel_print "Mononoki font already installed"
+  fi
 
 # ---- Finish Setup ----
 # ----------------------
