@@ -53,7 +53,7 @@ brew update
 
 brew_install() {
   local pkg="$1"; shift
-  if ! command -v brew ls --version $pkg >/dev/null; then
+  if ! brew ls --versions $pkg >/dev/null; then
     grn_print "Installing $pkg..."
     brew install $pkg
   else
@@ -66,7 +66,7 @@ brew_install rbenv
 brew_install ruby-build
 brew_install zsh
 
-if ! command -v brew ls --version vim >/dev/null; then
+if ! brew ls --versions vim >/dev/null; then
   grn_print "Installing Vim..."
   brew install vim --override-system-vi
 fi
