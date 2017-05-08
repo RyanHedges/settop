@@ -14,8 +14,15 @@ else
   echo "Ensuring that the ssh-agent is enabled..."
   eval "$(ssh-agent -s)"
 
+cat > ~/.ssh/config << EOF
+Host *
+ AddKeysToAgent yes
+ UseKeychain yes
+ IdentityFile ~/.ssh/id_rsa
+EOF
+
   echo "Adding key to agent..."
-  ssh-add ~/.ssh/id_rsa
+  ssh-add -K ~/.ssh/id_rsa
 
   echo "Copying contents of id_rsa.pub to clipboard..."
   pbcopy < ~/.ssh/id_rsa.pub
