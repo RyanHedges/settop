@@ -1,5 +1,7 @@
 #Settop a.k.a Set[up Lap]top
 
+testing prs
+
 This is a script for setting up my laptop. It works in conjunction with my
 [dotfiles repo](https://github.com/RyanHedges/dotfiles)
 
