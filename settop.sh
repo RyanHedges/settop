@@ -168,7 +168,7 @@ gem_install_or_update 'bundler'
 # ----------------------
 blue_pprint "Setting up Finder..."
 grn_print "Showing hidden files"
-defaults write com.apple.finder AppleShowAllFiles YES
+defaults write com.apple.finder AppleShowAllFiles -bool true
 killall Finder
 
 # ---- Font Setup ----
