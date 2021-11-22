@@ -34,44 +34,6 @@ grn_print "=  ====  ==  ===========  ========  ======  ==  ===  ======="
 grn_print "==      ===        =====  ========  =======    ====  ======="
 grn_print "============================================================"
 
-# ---- Install Dotfiles ----
-# --------------------------
-blue_pprint "Installing Dotfiles..."
-grn_print "Checking for ~/.dotfiles..."
-if [ ! -d ~/.dotfiles ]; then
-  grn_print "Cloning RyanHedges/dotfiles into ~/.dotfiles"
-  git clone git@github.com:RyanHedges/dotfiles.git ~/.dotfiles
-else
-  yel_print "Found existing ~/.dotfiles"
-  grn_print "Pulling the latest dotfiles instead..."
-  git -C ~/.dotfiles pull
-fi
-
-blue_pprint "Creating links to ~/.dotfiles..."
-~/.dotfiles/bin/install
-
-# ---- Set shell to Zsh ----
-# --------------------------
-blue_pprint "Setup zsh..."
-grn_print "Checking if zsh is added to /etc/shells"
-if ! grep -Fq "$(which zsh)" "/etc/shells"; then
-  grn_print "Adding $(which zsh) to /etc/shells"
-  sudo sh -c "echo '$(which zsh)' >> /etc/shells"
-else
-  yel_print "zsh already in /etc/shells"
-fi
-
-grn_print "Ensuring shell is using zsh..."
-case "$SHELL" in
-  */zsh)
-    yel_print "Shell already using zsh"
-    ;;
-  *)
-    grn_print "Changing shell to zsh"
-    chsh -s "$(which zsh)"
-    ;;
-esac
-
 # ---- Install Homebrew ----
 # --------------------------
 blue_pprint "Installing Homebrew..."
@@ -116,11 +78,47 @@ fi
 
 brew_install uptech/oss/git-ps
 
+# ---- Install Dotfiles ----
+# --------------------------
+blue_pprint "Installing Dotfiles..."
+grn_print "Checking for ~/.dotfiles..."
+if [ ! -d ~/.dotfiles ]; then
+  grn_print "Cloning RyanHedges/dotfiles into ~/.dotfiles"
+  git clone git@github.com:RyanHedges/dotfiles.git ~/.dotfiles
+else
+  yel_print "Using existing ~/.dotfiles"
+fi
+
+blue_pprint "Creating links to ~/.dotfiles..."
+~/.dotfiles/bin/install
+
 # ---- Bootstrap Vim ----
 # -----------------------
 blue_pprint "Bootstrapping vim..."
 grn_print "Running .dotfiles vim_strap"
 source ~/.dotfiles/bin/vim_strap
+
+# ---- Set shell to Zsh ----
+# --------------------------
+blue_pprint "Setup zsh..."
+grn_print "Checking if zsh is added to /etc/shells"
+if ! grep -Fq "$(which zsh)" "/etc/shells"; then
+  grn_print "Adding $(which zsh) to /etc/shells"
+  sudo sh -c "echo '$(which zsh)' >> /etc/shells"
+else
+  yel_print "zsh already in /etc/shells"
+fi
+
+grn_print "Ensuring shell is using zsh..."
+case "$SHELL" in
+  */zsh)
+    yel_print "Shell already using zsh"
+    ;;
+  *)
+    grn_print "Changing shell to zsh"
+    chsh -s "$(which zsh)"
+    ;;
+esac
 
 # ---- Directory Structure ----
 # -----------------------------
