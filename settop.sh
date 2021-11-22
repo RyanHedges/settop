@@ -70,7 +70,7 @@ brew_install zsh
 
 if ! brew ls --versions vim >/dev/null; then
   grn_print "Installing Vim..."
-  brew install vim --with-override-system-vi
+  brew install vim
 fi
 
 if ! brew tap | grep uptech >/dev/null; then
