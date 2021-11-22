@@ -71,6 +71,13 @@ if ! brew ls --versions vim >/dev/null; then
   brew install vim --with-override-system-vi
 fi
 
+if ! brew tap | grep uptech >/dev/null; then
+  grn_print 'Brew tapping "uptech/homebrew-oss"...'
+  brew tap "uptech/homebrew-oss"
+fi
+
+brew_install uptech/oss/git-ps
+
 # ---- Install Dotfiles ----
 # --------------------------
 blue_pprint "Installing Dotfiles..."
