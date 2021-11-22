@@ -40,6 +40,8 @@ blue_pprint "Installing Homebrew..."
 if ! command -v brew >/dev/null; then
   grn_print "Installing Homebrew..."
   /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
+  echo 'eval "$(/opt/homebrew/bin/brew shellenv)"' >> ~/.zprofile
+  eval "$(/opt/homebrew/bin/brew shellenv)"
 else
   yel_print "Homebrew already installed"
 fi
