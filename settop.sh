@@ -87,6 +87,8 @@ if [ ! -d ~/.dotfiles ]; then
   git clone git@github.com:RyanHedges/dotfiles.git ~/.dotfiles
 else
   yel_print "Using existing ~/.dotfiles"
+  grn_print "Pulling the latest dotfiles instead..."
+  git -C ~/.dotfiles pull
 fi
 
 blue_pprint "Creating links to ~/.dotfiles..."
