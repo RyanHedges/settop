@@ -1,4 +1,4 @@
-#Settop a.k.a Set[up Lap]top
+# Settop a.k.a Set[up Lap]top
 
 This is a script for setting up my laptop. It works in conjunction with my
 [dotfiles repo](https://github.com/RyanHedges/dotfiles)
@@ -18,17 +18,17 @@ $ rm ~/settop-master.zip
 1. Set up [ssh key for
 github](https://help.github.com/articles/which-remote-url-should-i-use/#cloning-with-ssh-urls)
 
-  ```bash
-  $ source ~/settop/settop_ssh.sh
-  ```
+   ```bash
+   $ source ~/settop/settop_ssh.sh
+   ```
 
-  This will:
+   This will:
     * Generates a ssh key
     * Adds key to a ssh-agent.
     * Copy contents of `id_rsa.pub` to your clipboard for pasting into GitHubs
       account settings.
 
-  If there is something in the ssh directory, it will NOT generate a key.
+   If there is anything in the ssh directory, it will NOT generate a key. You may want to copy from your keys over from an existing computer if possible.
 
 2. [Add the key to
 Github](https://help.github.com/articles/adding-a-new-ssh-key-to-your-github-account/)
