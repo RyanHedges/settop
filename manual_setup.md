@@ -7,3 +7,4 @@ doing this manually.
 - Change Delay Until Repeat to `Short`
 - Remap `caps lock` to be `ctrl`
 - May need to select "Command Lin Tools" in Xcode by going to `Preferences` -> `Locations`
+- Import the `Jellybeans-RHedges.terminal` to terminal `Preferences` -> `Profiles`
