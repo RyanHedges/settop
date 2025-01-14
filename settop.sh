@@ -79,7 +79,7 @@ if ! brew tap | grep uptech >/dev/null; then
   brew tap "drewdeponte/oss"
 fi
 
-brew_install install git-ps-rs
+brew_install git-ps-rs
 
 # ---- Install Dotfiles ----
 # --------------------------
