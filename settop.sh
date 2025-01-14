@@ -195,17 +195,17 @@ fi
 # ----------------------
 gem_install_or_update() {
   if gem list "$1" --installed > /dev/null; then
-    grn_print "Updating $@"
+    grn_print "Updating $@..."
     gem update "$@"
   else
-    grn_print "Installing $@"
+    grn_print "Installing $@..."
     gem install "$@"
     rbenv rehash
   fi
 }
 
 blue_pprint "Installing Gems..."
-grn_print "Updating RubyGems system software"
+grn_print "Updating RubyGems system software through gem update --system..."
 gem update --system
 
 gem_install_or_update 'bundler'
@@ -250,4 +250,4 @@ blue_pprint "Installing Fonts..."
 # ---- Finish Setup ----
 # ----------------------
 pprint ""
-grn_print "Your system is now settop"
+blue_pprint "Your system is now settop!"
