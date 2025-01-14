@@ -74,9 +74,11 @@ if ! brew ls --versions vim >/dev/null; then
   brew install vim
 fi
 
-if ! brew tap | grep uptech >/dev/null; then
+if ! brew tap | grep drewdeponte >/dev/null; then
   grn_print 'Brew tapping "drewdeponte/oss"...'
   brew tap "drewdeponte/oss"
+else
+  yel_print 'Brew already tapped "drewdeponte/oss"...'
 fi
 
 brew_install git-ps-rs
