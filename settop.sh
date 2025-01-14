@@ -172,11 +172,24 @@ else
   yel_print "Ruby version $ruby_version already installed"
 fi
 
-grn_print "Setting global ruby version to $ruby_version"
-rbenv global "$ruby_version"
 
-grn_print "Setting shell ruby version to $ruby_version"
-rbenv shell "$ruby_version"
+current_global_version=$(rbenv global)
+grn_print "global ruby: $current_global_version vs. latest ruby: $ruby_version"
+if [[ "$current_global_version" != "$ruby_version" ]]; then
+  grn_print "Setting global ruby version to $ruby_version"
+  rbenv global "$ruby_version"
+else
+  yel_print "Ruby $ruby_version already set to global ruby"
+fi
+
+current_shell_version=$(rbenv version-name)
+grn_print "shell version: $current_shell_version vs. latest ruby: $ruby_version"
+if [[ "$current_shell_version" != "$ruby_version" ]]; then
+  grn_print "Setting shell ruby version to $ruby_version"
+  rbenv shell "$ruby_version"
+else
+  yel_print "Ruby $ruby_version already set to current shell version"
+fi
 
 # ---- Install Gems ----
 # ----------------------
