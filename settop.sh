@@ -127,6 +127,25 @@ case "$SHELL" in
     ;;
 esac
 
+# ---- Installing NVM ----
+# ------------------------
+
+blue_pprint "Installing NVM..."
+if [ ! -d "$HOME/.nvm" ]; then
+  grn_print "Cloning nvm into ~/.nvm"
+  curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.1/install.sh | bash
+
+  grn_print 'Loading nvm...'
+  export NVM_DIR="$HOME/.nvm"
+  [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+  [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
+
+  grn_print 'Installing node...'
+  nvm install node
+else
+  yel_print "Using existing $HOME/.nvm"
+fi
+
 # ---- Directory Structure ----
 # -----------------------------
 blue_pprint "Setting up directory structure..."
