@@ -16,7 +16,7 @@ $ rm ~/settop-master.zip
 ### Github setup
 
 1. Set up [ssh key for
-github](https://help.github.com/articles/which-remote-url-should-i-use/#cloning-with-ssh-urls)
+github](https://help.github.com/articles/which-remote-url-should-i-use/#cloning-with-ssh-urls). The script is based on the directions found [on github's documentation](https://github.com/github/docs/blob/484596a3e1a0adf364f0560c6fce34d8823ea36f/content/authentication/connecting-to-github-with-ssh/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent.md).
 
    ```bash
    $ source ~/settop/settop_ssh.sh
@@ -24,8 +24,9 @@ github](https://help.github.com/articles/which-remote-url-should-i-use/#cloning-
 
    This will:
     * Generates a ssh key
-    * Adds key to a ssh-agent.
-    * Copy contents of `id_rsa.pub` to your clipboard for pasting into GitHubs
+    * Creates the `.ssh/config` file
+    * Adds key to a ssh-agent using `--apple-use-keychain` for passphrase
+    * Copy contents of `id_ed25519.pub` to your clipboard for pasting into GitHubs
       account settings.
 
    If there is anything in the ssh directory, it will NOT generate a key. You may want to copy from your keys over from an existing computer if possible.
