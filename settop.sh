@@ -39,7 +39,7 @@ grn_print "============================================================"
 blue_pprint "Installing Homebrew..."
 if ! command -v brew >/dev/null; then
   grn_print "Installing Homebrew..."
-  /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
+  /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
   echo 'eval "$(/opt/homebrew/bin/brew shellenv)"' >> ~/.zprofile
   eval "$(/opt/homebrew/bin/brew shellenv)"
   source ~/.zprofile
@@ -75,11 +75,11 @@ if ! brew ls --versions vim >/dev/null; then
 fi
 
 if ! brew tap | grep uptech >/dev/null; then
-  grn_print 'Brew tapping "uptech/homebrew-oss"...'
-  brew tap "uptech/homebrew-oss"
+  grn_print 'Brew tapping "drewdeponte/oss"...'
+  brew tap "drewdeponte/oss"
 fi
 
-brew_install uptech/oss/git-ps
+brew_install install git-ps-rs
 
 # ---- Install Dotfiles ----
 # --------------------------
