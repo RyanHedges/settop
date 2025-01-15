@@ -14,11 +14,18 @@ yel_print() {
   printf "\e[33m$msg\e[0m\n"
 }
 
-blue_pprint() {
+# Function for blue text printing
+blue_print() {
   local msg="$1"; shift
-  printf "\n\e[34m$msg\e[0m\n"
+  printf "\e[34m$msg\e[0m\n"
 }
 
+# Function for blue text printing with an extra newline
+blue_pprint() {
+  local msg="$1"; shift
+  printf "\n"
+  blue_print "$msg"
+}
 set -e
 
 pprint ""
