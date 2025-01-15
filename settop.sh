@@ -263,16 +263,21 @@ defaults write com.apple.finder "AppleShowAllFiles" -bool "true"
 grn_print "Applying changes to Finder with killall..."
 killall Finder
 
+brew_install_cask() {
+  local pkg="$1"; shift
+  if ! brew ls --cask --versions $pkg >/dev/null; then
+    grn_print "Installing $pkg..."
+    brew install --cask $pkg
+  else
+    yel_print "$pkg already installed. Skipping..."
+  fi
+}
+
 # ---- Visual Studio Code ----
 # ----------------------------
 blue_pprint "Installing Visual Studio Code..."
+brew_install_cask visual-studio-code
 
-if ! brew list --cask --versions visual-studio-code >/dev/null; then
-  grn_print "Installing visual-studio-code..."
-  brew install --cask visual-studio-code
-else
-  yel_print "Visual Studio Code already installed"
-fi
 
 # ---- Finish Setup ----
 # ----------------------
