@@ -74,6 +74,8 @@ brew_install git
 brew_install rbenv
 brew_install ruby-build
 brew_install zsh
+brew_install gh
+brew_install gifski
 
 if ! brew ls --versions vim >/dev/null; then
   grn_print "Installing Vim..."
