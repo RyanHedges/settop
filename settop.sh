@@ -127,25 +127,6 @@ case "$SHELL" in
     ;;
 esac
 
-# ---- Installing NVM ----
-# ------------------------
-
-blue_pprint "Installing NVM..."
-if [ ! -d "$HOME/.nvm" ]; then
-  grn_print "Cloning nvm into ~/.nvm"
-  curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.1/install.sh | bash
-
-  grn_print 'Loading nvm...'
-  export NVM_DIR="$HOME/.nvm"
-  [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
-  [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
-
-  grn_print 'Installing node...'
-  nvm install node
-else
-  yel_print "Using existing $HOME/.nvm"
-fi
-
 # ---- Directory Structure ----
 # -----------------------------
 blue_pprint "Setting up directory structure..."
@@ -229,23 +210,25 @@ blue_pprint "Installing Fonts..."
     yel_print "Mononoki font already installed"
   fi
 
-# ---- NVM Setup ----
-# https://github.com/nvm-sh/nvm/tree/v0.39.0#manual-install
-# -------------------
-# blue_pprint "Installing NVM..."
-# Something is off on how nvm and shell scripts work together
-# https://unix.stackexchange.com/questions/184508/nvm-command-not-available-in-bash-script
-# if [! command -v nvm >/dev/null]; then
-#   # export NVM_DIR="$HOME/.nvm" && (
-#   #  git clone https://github.com/nvm-sh/nvm.git "$NVM_DIR"
-#   #  cd "$NVM_DIR"
-#   #  git checkout `git describe --abbrev=0 --tags --match "v[0-9]*" $(git rev-list --tags --max-count=1)`
-#   #) && \. "$NVM_DIR/nvm.sh"
-#   command -v nvm
-#   yel_print "TEST NVM NOT installed"
-# else
-#   yel_print "NVM already installed"
-# fi
+# ---- Installing NVM ----
+# ------------------------
+
+blue_pprint "Installing NVM..."
+if [ ! -d "$HOME/.nvm" ]; then
+  grn_print "Cloning nvm into ~/.nvm"
+  curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.1/install.sh | bash
+
+  grn_print 'Loading nvm...'
+  export NVM_DIR="$HOME/.nvm"
+  [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+  [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
+
+  grn_print 'Installing node...'
+  nvm install node
+else
+  yel_print "Using existing $HOME/.nvm"
+fi
+
 
 # ---- Finish Setup ----
 # ----------------------
