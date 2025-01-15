@@ -42,6 +42,10 @@ Github](https://help.github.com/articles/adding-a-new-ssh-key-to-your-github-acc
   $ sh ~/settop/settop.sh
   ```
 
+### Manual Setup
+
+Read the [manual setup guide](manual_setup.md) to run through the checklist
+
 ## Helpful resources used while making this
 - [thoughtbot laptop](https://github.com/thoughtbot/laptop)
 - [Brian Miller Dotfiles](https://github.com/BRIMIL01/dotfiles)
