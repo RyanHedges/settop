@@ -278,6 +278,65 @@ brew_install_cask() {
 blue_pprint "Installing Visual Studio Code..."
 brew_install_cask visual-studio-code
 
+# ---- Installing Setapp ----
+# ---------------------------
+blue_pprint "Installing Setapp..."
+brew_install_cask setapp
+
+# ---- Installing Firefox ----
+# ----------------------------
+blue_pprint "Installing Firefox..."
+brew_install_cask firefox
+
+# ---- Installing Slack ----
+# --------------------------
+blue_pprint "Installing Slack..."
+brew_install_cask slack
+
+# ---- Installing Zoom ----
+# -------------------------
+blue_pprint "Installing Zoom..."
+brew_install_cask zoom
+
+# ---- Installing 1Password ----
+# ------------------------------
+blue_pprint "Installing 1Password..."
+brew_install_cask 1password
+
+# ---- Installing Postico ----
+# ----------------------------
+blue_pprint "Installing Postico..."
+brew_install_cask postico
+
+# ---- Installing Spotify ----
+# ----------------------------
+blue_pprint "Installing Spotify..."
+brew_install_cask spotify
+
+# ---- Installing Tuple ----
+# --------------------------
+blue_pprint "Installing Tuple..."
+brew_install_cask tuple
+
+# ---- Installing Rectangle ----
+# ------------------------------
+blue_pprint "Installing Rectangle..."
+brew_install_cask rectangle
+
+# ---- Installing Sublime Merge ----
+# ----------------------------------
+blue_pprint "Installing Sublime Merge..."
+brew_install_cask sublime-merge
+
+# ---- Installing ChatGPT ----
+# ----------------------------
+blue_pprint "Installing ChatGPT..."
+brew_install_cask chatgpt
+
+# ---- Installing Maccy ----
+# --------------------------
+blue_pprint "Installing Maccy..."
+brew_install_cask maccy
 
 # ---- Finish Setup ----
 # ----------------------
