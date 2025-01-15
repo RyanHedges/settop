@@ -255,6 +255,17 @@ defaults write com.apple.finder "AppleShowAllFiles" -bool "true"
 grn_print "Applying changes to Finder with killall..."
 killall Finder
 
+# ---- Visual Studio Code ----
+# ----------------------------
+blue_pprint "Installing Visual Studio Code..."
+
+if ! brew list --cask --versions visual-studio-code >/dev/null; then
+  grn_print "Installing visual-studio-code..."
+  brew install --cask visual-studio-code
+else
+  yel_print "Visual Studio Code already installed"
+fi
+
 # ---- Finish Setup ----
 # ----------------------
 blue_pprint "Your system is now settop!"
