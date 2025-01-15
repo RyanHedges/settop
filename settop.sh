@@ -232,5 +232,4 @@ fi
 
 # ---- Finish Setup ----
 # ----------------------
-pprint ""
 blue_pprint "Your system is now settop!"
