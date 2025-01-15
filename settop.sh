@@ -229,6 +229,31 @@ else
   yel_print "Using existing $HOME/.nvm"
 fi
 
+# ---- Configure Finder ----
+# --------------------------
+blue_pprint "Configuring Finder..."
+# https://github.com/yannbertrand/macos-defaults/blob/e03f6efba91e57c33846aec87eee8f205b20329f/docs/finder/appleshowallextensions.md
+grn_print "Show all filename extensions..."
+defaults write NSGlobalDomain AppleShowAllExtensions -bool true
+
+# https://github.com/yannbertrand/macos-defaults/blob/e03f6efba91e57c33846aec87eee8f205b20329f/docs/finder/fxremoveoldtrashitems.md
+grn_print "Remove items from the Trash after 30 days..."
+defaults write com.apple.finder FXRemoveOldTrashItems -bool true
+
+# https://github.com/yannbertrand/macos-defaults/blob/e03f6efba91e57c33846aec87eee8f205b20329f/docs/finder/showpathbar.md
+grn_print "Show path bar..."
+defaults write com.apple.finder "ShowPathbar" -bool true
+
+# https://github.com/yannbertrand/macos-defaults/blob/e03f6efba91e57c33846aec87eee8f205b20329f/docs/finder/fxpreferredviewstyle.md
+grn_print "Set default view style for folders to Column view..."
+defaults write com.apple.finder "FXPreferredViewStyle" -string "clmv"
+
+# https://github.com/yannbertrand/macos-defaults/blob/e03f6efba91e57c33846aec87eee8f205b20329f/docs/finder/appleshowallfiles.md
+grn_print "Show hidden files inside the Finder..."
+defaults write com.apple.finder "AppleShowAllFiles" -bool "true"
+
+grn_print "Applying changes to Finder with killall..."
+killall Finder
 
 # ---- Finish Setup ----
 # ----------------------
