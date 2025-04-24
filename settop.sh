@@ -274,10 +274,10 @@ brew_install_cask() {
 blue_pprint "Installing Nerd Font..."
 brew_install_cask font-hack-nerd-font
 
-# ---- Visual Studio Code ----
-# ----------------------------
-blue_pprint "Installing Visual Studio Code..."
-brew_install_cask visual-studio-code
+# ---- Installing Zed ----
+# ------------------------
+blue_pprint "Installing Zed..."
+brew_install_cask zed
 
 # ---- Installing Setapp ----
 # ---------------------------
