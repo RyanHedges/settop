@@ -289,6 +289,11 @@ brew_install_cask setapp
 blue_pprint "Installing Firefox..."
 brew_install_cask firefox
 
+# ---- Installing Google Chrome ----
+# ----------------------------------
+blue_pprint "Installing Google Chrome..."
+brew_install_cask google-chrome
+
 # ---- Installing Slack ----
 # --------------------------
 blue_pprint "Installing Slack..."
