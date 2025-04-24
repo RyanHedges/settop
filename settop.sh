@@ -344,6 +344,11 @@ brew_install_cask chatgpt
 blue_pprint "Installing Maccy..."
 brew_install_cask maccy
 
+# ---- Installing Boop ----
+# -------------------------
+blue_pprint "Installing Boop..."
+brew_install_cask boop
+
 # ---- Finish Setup ----
 # ----------------------
 # https://budavariam.github.io/asciiart-text/
