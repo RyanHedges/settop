@@ -269,6 +269,11 @@ brew_install_cask() {
   fi
 }
 
+# ---- Installing Nerd Font ----
+# ------------------------------
+blue_pprint "Installing Nerd Font..."
+brew_install_cask font-hack-nerd-font
+
 # ---- Visual Studio Code ----
 # ----------------------------
 blue_pprint "Installing Visual Studio Code..."
