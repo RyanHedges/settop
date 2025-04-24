@@ -76,11 +76,7 @@ brew_install ruby-build
 brew_install zsh
 brew_install gh
 brew_install gifski
-
-if ! brew ls --versions vim >/dev/null; then
-  grn_print "Installing Vim..."
-  brew install vim
-fi
+brew_install vim
 
 if ! brew tap | grep drewdeponte >/dev/null; then
   grn_print 'Brew tapping "drewdeponte/oss"...'
