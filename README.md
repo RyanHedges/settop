@@ -31,6 +31,16 @@ github](https://help.github.com/articles/which-remote-url-should-i-use/#cloning-
 
    If there is anything in the ssh directory, it will NOT generate a key. You may want to copy from your keys over from an existing computer if possible.
 
+    After setting up the new SSH key with github you can [test it
+with](https://docs.github.com/en/authentication/connecting-to-github-with-ssh/testing-your-ssh-connection):
+    ```
+    $ ssh -T git@github.com
+    ```
+    Continue by adding 'github.com' to the list of known hosts and you should
+see..
+    > Hi RyanHedges! You've successfully authenticated, but GitHub does not
+    > provide shell access
+
 2. [Add the key to
 Github](https://help.github.com/articles/adding-a-new-ssh-key-to-your-github-account/)
 
