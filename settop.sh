@@ -1,32 +1,19 @@
 #!/bin/sh
-pprint() {
-  local msg="$1"; shift
-  printf "\n$msg\n"
-}
 
-grn_print() {
-  local msg="$1"; shift
-  printf "\e[32m$msg\e[0m\n"
-}
-
-yel_print() {
-  local msg="$1"; shift
-  printf "\e[33m$msg\e[0m\n"
-}
-
-# Function for blue text printing
-blue_print() {
-  local msg="$1"; shift
-  printf "\e[34m$msg\e[0m\n"
-}
-
-# Function for blue text printing with an extra newline
-blue_pprint() {
-  local msg="$1"; shift
-  printf "\n"
-  blue_print "$msg"
-}
 set -e
+
+# https://stackoverflow.com/a/246128
+SOURCE=${BASH_SOURCE[0]}
+while [ -L "$SOURCE" ]; do
+  # resolve $SOURCE until the file is no longer a symlink
+  DIR=$( cd -P "$( dirname "$SOURCE" )" >/dev/null 2>&1 && pwd )
+  SOURCE=$(readlink "$SOURCE")
+  # if $SOURCE was a relative symlink, resolve it relative to the symlink’s dir
+  [[ $SOURCE != /* ]] && SOURCE=$DIR/$SOURCE
+done
+SCRIPT_DIR=$( cd -P "$( dirname "$SOURCE" )" >/dev/null 2>&1 && pwd )
+
+source "$SCRIPT_DIR/colors.sh"
 
 # https://budavariam.github.io/asciiart-text/
 # DOS Rebel
