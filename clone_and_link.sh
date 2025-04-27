@@ -17,7 +17,7 @@ source "$SCRIPT_DIR/colors.sh"
 REPO_URL="git@github.com:RyanHedges/settop.git"
 TARGET="$HOME/projects/ryanhedges/settop/settop.sh"
 REPO_DIR="$( dirname "$TARGET" )"
-LINK="$HOME/run_settop.sh"
+LINK="$HOME/settop.sh"
 
 blue_pprint "Cloning settop repo and sym linking it for use and development..."
 

@@ -9,7 +9,7 @@ project and unzip it.
 
 ```bash
 $ curl -o ~/settop-master.zip -Lk https://github.com/ryanhedges/settop/archive/master.zip
-$ unzip -j ~/settop-master.zip -d ~/settop
+$ unzip -j ~/settop-master.zip -d ~/init-settop
 $ rm ~/settop-master.zip
 ```
 
@@ -19,7 +19,7 @@ $ rm ~/settop-master.zip
 github](https://help.github.com/articles/which-remote-url-should-i-use/#cloning-with-ssh-urls). The script is based on the directions found [on github's documentation](https://github.com/github/docs/blob/484596a3e1a0adf364f0560c6fce34d8823ea36f/content/authentication/connecting-to-github-with-ssh/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent.md).
 
    ```bash
-   $ source ~/settop/settop_ssh.sh
+   $ source ~/init-settop/settop_ssh.sh
    ```
 
    This will:
@@ -49,19 +49,19 @@ Github](https://help.github.com/articles/adding-a-new-ssh-key-to-your-github-acc
 1. Run the settop script
 
   ```bash
-  $ sh ~/settop/settop.sh
+  $ sh ~/init-settop/settop.sh
   ```
 
 2. Run the script to copy this repo for future development
 
     ```bash
-    $ sh clone_and_link.sh
+    $ sh ~/init-settop/clone_and_link.sh
     ```
 
 3. Remove the initial download
 
     ```bash
-    $ rm -rf ~/settop
+    $ rm -rf ~/init-settop
     ```
 
 ### Manual Setup
