@@ -52,6 +52,18 @@ Github](https://help.github.com/articles/adding-a-new-ssh-key-to-your-github-acc
   $ sh ~/settop/settop.sh
   ```
 
+2. Run the script to copy this repo for future development
+
+    ```bash
+    $ sh clone_and_link.sh
+    ```
+
+3. Remove the initial download
+
+    ```bash
+    $ rm -rf ~/settop
+    ```
+
 ### Manual Setup
 
 Read the [manual setup guide](manual_setup.md) to run through the checklist
