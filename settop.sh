@@ -363,7 +363,7 @@ brew_install_cask boop
 # --------------------------
 blue_pprint "Installing XCode..."
 if [ -d "/Applications/Xcode.app" ]; then
-  yel_print "XCode already installed"
+  yel_print "XCode already installed. Skipping..."
 else
   grn_print "XCode installing..."
   mas install 497799835
@@ -373,7 +373,7 @@ fi
 # ----------------------------------------
 blue_pprint "Installing Command-Line Tools..."
 if xcode-select -p &>/dev/null; then
-  yel_print "Command-Line Tools are now installed"
+  yel_print "Command-Line Tools already installed. Skipping..."
 else
   grn_print "Command-Line Tools installing..."
   xcode-select --install
