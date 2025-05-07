@@ -247,6 +247,28 @@ defaults write com.apple.finder "AppleShowAllFiles" -bool "true"
 grn_print "Applying changes to Finder with killall..."
 killall Finder
 
+# set a very fast repeat (e.g. 1 = ~15 ms between repeats)
+grn_print "Increase key repeat rate..."
+defaults write NSGlobalDomain KeyRepeat -int 1
+
+# set a short delay until repeat (e.g. 15 = ~225 ms delay)
+grn_print "Decrease the delay until key repeat..."
+defaults write NSGlobalDomain InitialKeyRepeat -int 15
+
+grn_print "Update appearance to Light/Dark switching..."
+defaults write -g AppleInterfaceStyleSwitchesAutomatically -bool true
+
+grn_print "Show precentage on battery..."
+defaults write com.apple.menuextra.battery ShowPercent -string "YES"
+defaults -currentHost write com.apple.controlcenter BatteryShowInMenuBar -bool true
+defaults -currentHost write com.apple.controlcenter BatteryShowPercentage -bool true
+defaults -currentHost write com.apple.controlcenter Sound -int 18
+
+blue_pprint "Run killall SystemUIServer and ControlCenter..."
+killall SystemUIServer
+killall ControlCenter
+
+
 brew_install_cask() {
   local pkg="$1"; shift
   if ! brew ls --cask --versions $pkg >/dev/null; then
