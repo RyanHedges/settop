@@ -1,16 +1,16 @@
 # Manual Settop
 
 In the future I need to find ways to automate this part of the setup. Currently
-doing this manually.
+doing this manually. Marked items should be covered by scripts...
 
 ## Update Keyboard
-- [ ] System Settings > Keyboard > Change Key Repeat rate to `fast`
-- [ ] System Settings > Keyboard > Change Delay Until Repeat to `Short`
+- [x] System Settings > Keyboard > Change Key Repeat rate to `fast`
+- [x] System Settings > Keyboard > Change Delay Until Repeat to `Short`
 - [ ] System Settings > Keyboard > Keyboard Shortcuts... > Modifier Keys > Remap `Caps Lock key` to be `Control`
 
 ## Update Appearance
-- [ ] System Settings > Appearance > Change Appearance to be `Auto`
-- [ ] System Settings > Control Center > Battery > Turn ON `Show Percentage`
+- [x] System Settings > Appearance > Change Appearance to be `Auto`
+- [x] System Settings > Control Center > Battery > Turn ON `Show Percentage`
 - [ ] System Settings > Control Center > Clock Options... > Turn ON `Display the
 time with seconds`
 - [ ] System Settings > Desktop & Dock > Set `Double-click a window's title bar
@@ -23,8 +23,8 @@ time with seconds`
 - [ ] Import the `Jellybeans-RHedges.terminal` to terminal `Preferences` -> `Profiles`
 
 ## Xcode
-- [ ] Install Xcode from the mac app store.
-- [ ] May need to select "Command Lin Tools" in Xcode by going to `Preferences` -> `Locations` if Brew doesn't install it for you.
+- [x] Install Xcode from the mac app store.
+- [x] May need to select "Command Line Tools" in Xcode by going to `Preferences` -> `Locations` if Brew doesn't install it for you.
 
 ## Applications
 
@@ -47,6 +47,7 @@ applications, and configure them as needed.
 
 ### Sublime Merge
 - [ ] Add License
+        * Get the license from it's location (e.g. secrets manager, email, usb, etc.)
         * Open Sublime Merge, and select the menu item Help / Enter License
         * Copy the license above (including the BEGIN LICENSE and END LICENSE lines) and paste them into the license box. Press OK and Sublime Merge will enter into licensed mode: You should see that UNREGISTERED is no longer in the window title.
 
