@@ -44,6 +44,12 @@ see..
 2. [Add the key to
 Github](https://help.github.com/articles/adding-a-new-ssh-key-to-your-github-account/)
 
+### Setup App Store
+
+Open app store and ensure that the apple account that downloads Mac apps is
+signed in. This can be triggered by going to Account Settings. I have to switch
+my personal Apple ID to my application Apple ID for this to work.
+
 ### Setup laptop
 
 1. Run the settop script

@@ -64,6 +64,7 @@ brew_install zsh
 brew_install gh
 brew_install gifski
 brew_install vim
+brew_install mas
 
 if ! brew tap | grep drewdeponte >/dev/null; then
   grn_print 'Brew tapping "drewdeponte/oss"...'
@@ -335,6 +336,26 @@ brew_install_cask maccy
 # -------------------------
 blue_pprint "Installing Boop..."
 brew_install_cask boop
+
+# ---- Installing XCode ----
+# --------------------------
+blue_pprint "Installing XCode..."
+if [ -d "/Applications/Xcode.app" ]; then
+  yel_print "XCode already installed"
+else
+  grn_print "XCode installing..."
+  mas install 497799835
+fi
+
+# ---- Installilng Command-Line Tools ----
+# ----------------------------------------
+blue_pprint "Installing Command-Line Tools..."
+if xcode-select -p &>/dev/null; then
+  yel_print "Command-Line Tools are now installed"
+else
+  grn_print "Command-Line Tools installing..."
+  xcode-select --install
+fi
 
 # ---- Finish Setup ----
 # ----------------------
