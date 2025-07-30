@@ -248,6 +248,10 @@ defaults write com.apple.finder "FXPreferredViewStyle" -string "clmv"
 grn_print "Show hidden files inside the Finder..."
 defaults write com.apple.finder "AppleShowAllFiles" -bool "true"
 
+# https://github.com/yannbertrand/macos-defaults/blob/e03f6efba91e57c33846aec87eee8f205b20329f/docs/keyboard/applepressandholdenabled.md#set-to-false
+grn_print "Show hidden files inside the Finder..."
+defaults write NSGlobalDomain "ApplePressAndHoldEnabled" -bool "false"
+
 grn_print "Applying changes to Finder with killall..."
 killall Finder
 
