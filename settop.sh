@@ -344,10 +344,10 @@ brew_install_cask rectangle
 blue_pprint "Installing Sublime Merge..."
 brew_install_cask sublime-merge
 
-# ---- Installing ChatGPT ----
+# ---- Installing Claude ----
 # ----------------------------
-blue_pprint "Installing ChatGPT..."
-brew_install_cask chatgpt
+blue_pprint "Installing Claude..."
+brew_install_cask claude
 
 # ---- Installing Maccy ----
 # --------------------------
