@@ -66,9 +66,9 @@ brew_install gifski
 brew_install vim
 brew_install mas
 
-if ! brew tap | grep drewdeponte >/dev/null; then
+if ! brew tap | grep -q '^drewdeponte/oss$'; then
   grn_print 'Brew tapping "drewdeponte/oss"...'
-  brew tap "drewdeponte/oss"
+  brew tap "drewdeponte/oss" "git://git.drewdeponte.com/homebrew-oss.git"
 else
   yel_print 'Brew already tapped "drewdeponte/oss"...'
 fi
