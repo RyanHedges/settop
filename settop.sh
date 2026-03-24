@@ -91,6 +91,10 @@ fi
 blue_pprint "Creating links to ~/.dotfiles..."
 ~/.dotfiles/bin/install
 
+# ---- Install OpenCode CLI ----
+# --------------------------------
+brew_install opencode
+
 # ---- Bootstrap Vim ----
 # -----------------------
 blue_pprint "Bootstrapping vim..."
@@ -358,6 +362,16 @@ brew_install_cask maccy
 # -------------------------
 blue_pprint "Installing Boop..."
 brew_install_cask boop
+
+# ---- Installing Ghostty ----
+# ----------------------------
+blue_pprint "Installing Ghostty..."
+brew_install_cask ghostty
+
+# ---- Installing OpenCode Desktop ----
+# -------------------------------------
+blue_pprint "Installing OpenCode Desktop..."
+brew_install_cask opencode-desktop
 
 # ---- Installing XCode ----
 # --------------------------
