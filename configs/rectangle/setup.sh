@@ -8,6 +8,11 @@ if [ -f "$SCRIPT_DIR/configs/rectangle/RectangleConfig.json" ]; then
   cp -f "$SCRIPT_DIR/configs/rectangle/RectangleConfig.json" \
     "$HOME/Library/Application Support/Rectangle/RectangleConfig.json"
   grn_print "Rectangle config applied"
+  yel_print "════════════════════════════════════════════════════════"
+  yel_print "  ⚠ ACTION REQUIRED: launch Rectangle once for it to"
+  yel_print "    register the login helper. After first launch, it"
+  yel_print "    will automatically start on login."
+  yel_print "════════════════════════════════════════════════════════"
 else
   yel_print "RectangleConfig.json not found in configs/rectangle/"
 fi
