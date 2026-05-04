@@ -3,6 +3,9 @@
 This is a script for setting up my laptop. It works in conjunction with my
 [dotfiles repo](https://github.com/RyanHedges/dotfiles)
 
+### Set up Laptop
+* Make sure that the home directory is `ryanhedges` so that scripts and things that are currently not dynamic properly look for the files.
+
 ### Download the project
 This is intended to be used on a brand new machine so you'll have to curl the
 project and unzip it.
@@ -27,11 +30,11 @@ github](https://help.github.com/articles/which-remote-url-should-i-use/#cloning-
     * Creates the `.ssh/config` file
     * Adds key to a ssh-agent using `--apple-use-keychain` for passphrase
     * Copy contents of `id_ed25519.pub` to your clipboard for pasting into GitHubs
-      account settings.
+      account settings. [Add the key to Github](https://help.github.com/articles/adding-a-new-ssh-key-to-your-github-account/) 
 
    If there is anything in the ssh directory, it will NOT generate a key. You may want to copy from your keys over from an existing computer if possible.
 
-    After setting up the new SSH key with github you can [test it
+2. After setting up the new SSH key with github you can [test it
 with](https://docs.github.com/en/authentication/connecting-to-github-with-ssh/testing-your-ssh-connection):
     ```
     $ ssh -T git@github.com
@@ -41,8 +44,6 @@ see..
     > Hi RyanHedges! You've successfully authenticated, but GitHub does not
     > provide shell access
 
-2. [Add the key to
-Github](https://help.github.com/articles/adding-a-new-ssh-key-to-your-github-account/)
 
 ### Setup App Store
 
@@ -54,9 +55,9 @@ my personal Apple ID to my application Apple ID for this to work.
 
 1. Run the settop script
 
-  ```bash
-  $ sh ~/init-settop/settop.sh
-  ```
+    ```bash
+    $ sh ~/init-settop/settop.sh
+    ```
 
 2. Run the script to copy this repo for future development
 
