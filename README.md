@@ -51,6 +51,14 @@ Open app store and ensure that the apple account that downloads Mac apps is
 signed in. This can be triggered by going to Account Settings. I have to switch
 my personal Apple ID to my application Apple ID for this to work.
 
+If you encounter an error like:
+```
+Error: No downloads initiated for ADAM ID 497799835
+```
+it indicates the App Store account is not properly authenticated or the app
+is not available for download with the current Apple ID. Verify you are signed
+in with the correct application Apple ID.
+
 ### Setup laptop
 
 1. Run the settop script
