@@ -14,6 +14,7 @@ done
 SCRIPT_DIR=$( cd -P "$( dirname "$SOURCE" )" >/dev/null 2>&1 && pwd )
 
 source "$SCRIPT_DIR/colors.sh"
+source "$SCRIPT_DIR/configure_app.sh"
 
 # https://budavariam.github.io/asciiart-text/
 # DOS Rebel
@@ -346,6 +347,7 @@ brew_install_cask tuple
 # ------------------------------
 blue_pprint "Installing Rectangle..."
 brew_install_cask rectangle
+configure_app rectangle
 
 # ---- Installing Sublime Merge ----
 # ----------------------------------
