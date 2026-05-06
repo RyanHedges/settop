@@ -63,6 +63,7 @@ brew_install rbenv
 brew_install ruby-build
 brew_install zsh
 brew_install gh
+configure_app ssh-signing
 brew_install gifski
 brew_install vim
 brew_install mas

@@ -1,4 +1,6 @@
 #!/bin/sh
+# DEPRECATED: All SSH setup is now handled by `configs/ssh-signing/setup.sh` in `settop.sh`
+# No separate run of this script is needed. This file is kept for reference only.
 
 echo "Checking if ssh keys exist in ~/.ssh"
 
