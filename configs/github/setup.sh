@@ -1,54 +1,13 @@
-blue_pprint "Configuring SSH keys and commit signing..."
+blue_pprint "Configuring GitHub with SSH keys..."
 
-# --- 1. Generate SSH key if missing (merged from settop_ssh.sh) ---
-if [ ! -f ~/.ssh/id_ed25519 ]; then
-  grn_print "Generating new SSH key (ed25519)..."
-  # Get email from git config if available, else prompt
-  email=$(git config --global user.email 2>/dev/null)
-  if [ -z "$email" ]; then
-    echo "Enter the GitHub account email for your key:"
-    read -r email
-  fi
-  # Prompt for passphrase interactively (no -N flag to enforce passphrase entry)
-  ssh-keygen -t ed25519 -C "$email" -f ~/.ssh/id_ed25519
-else
-  yel_print "SSH key ~/.ssh/id_ed25519 already exists"
-fi
-
-# --- 2. Configure ~/.ssh/config (merged from settop_ssh.sh) ---
-if ! grep -q "IdentityFile ~/.ssh/id_ed25519" ~/.ssh/config 2>/dev/null; then
-  grn_print "Updating ~/.ssh/config..."
-  cat >> ~/.ssh/config << EOF
-Host *
-  AddKeysToAgent yes
-  UseKeychain yes
-  IdentityFile ~/.ssh/id_ed25519
-EOF
-else
-  yel_print "~/.ssh/config already configured"
-fi
-
-# --- 3. Start ssh-agent and add key ---
-eval "$(ssh-agent -s)" 2>/dev/null || true
-if ssh-add -l 2>/dev/null | grep -q "id_ed25519"; then
-  yel_print "SSH key already in agent"
-else
-  grn_print "Adding key to ssh-agent..."
-  if ssh-add --apple-use-keychain ~/.ssh/id_ed25519; then
-    grn_print "SSH key added to agent"
-  else
-    yel_print "Failed to add key to agent (agent may not be running)"
-  fi
-fi
-
-# --- 4. Prompt for key nickname (hostname as default) ---
+# --- 1. Prompt for key nickname (hostname as default) ---
 DEFAULT_NICKNAME=$(scutil --get ComputerName 2>/dev/null || hostname)
 grn_print "Enter a nickname for this machine's SSH keys or press Enter to use [$DEFAULT_NICKNAME]:"
 read -r NICKNAME
 NICKNAME=${NICKNAME:-$DEFAULT_NICKNAME}
 grn_print "Using key nickname: $NICKNAME"
 
-# --- 5. Authenticate gh CLI with required scopes ---
+# --- 2. Authenticate gh CLI with required scopes ---
 REQUIRED_SCOPES="admin:public_key,admin:ssh_signing_key"
 if ! gh auth status &>/dev/null; then
   yel_print "════════════════════════════════════════════════════"
@@ -65,7 +24,7 @@ else
   grn_print "gh CLI already authenticated"
 fi
 
-# --- 5b. Refresh token if missing SSH key management scopes ---
+# --- 2b. Refresh token if missing SSH key management scopes ---
 AUTH_STATUS=$(gh auth status 2>&1)
 MISSING_SCOPES=""
 for scope in admin:public_key admin:ssh_signing_key; do
@@ -83,7 +42,7 @@ if [ -n "$MISSING_SCOPES" ]; then
   grn_print "Token refreshed with $MISSING_SCOPES scope(s)"
 fi
 
-# --- 6. Add key to GitHub as AUTH type (title-based duplicate check) ---
+# --- 3. Add key to GitHub as AUTH type (title-based duplicate check) ---
 AUTH_TITLE="auth-$NICKNAME"
 if gh ssh-key list 2>/dev/null | grep -q "$AUTH_TITLE"; then
   yel_print "Authentication key '$AUTH_TITLE' already on GitHub, skipping"
@@ -95,7 +54,7 @@ else
   fi
 fi
 
-# --- 7. Add key to GitHub as SIGNING type (title-based duplicate check) ---
+# --- 4. Add key to GitHub as SIGNING type (title-based duplicate check) ---
 SIGN_TITLE="signing-$NICKNAME"
 if gh ssh-key list 2>/dev/null | grep -q "$SIGN_TITLE"; then
   yel_print "Signing key '$SIGN_TITLE' already on GitHub, skipping"
@@ -107,7 +66,7 @@ else
   fi
 fi
 
-# --- 8. Verify Git config (managed by dotfiles) ---
+# --- 5. Verify Git config (managed by dotfiles) ---
 grn_print "Git signing config:"
 if [ -d ~/.dotfiles ] && [ -L ~/.gitconfig ]; then
   grn_print "  ~/.gitconfig -> $(readlink ~/.gitconfig)"
