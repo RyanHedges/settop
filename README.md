@@ -12,7 +12,8 @@ project and unzip it.
 
 ```bash
 $ curl -o ~/settop-master.zip -Lk https://github.com/ryanhedges/settop/archive/master.zip
-$ unzip -j ~/settop-master.zip -d ~/init-settop
+$ unzip ~/settop-master.zip -d ~/
+$ mv ~/settop-master ~/init-settop
 $ rm ~/settop-master.zip
 ```
 
