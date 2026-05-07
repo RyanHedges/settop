@@ -1,13 +1,106 @@
 blue_pprint "Configuring GitHub with SSH keys..."
 
-# --- 1. Prompt for key nickname (hostname as default) ---
+# NOTE: This script is sourced by settop.sh. Any exit 1 here terminates the
+# entire settop.sh run intentionally — a GitHub config failure is unrecoverable
+# for the rest of setup (SSH keys won't be uploaded, signing won't work).
+
+# --- 1. Ensure fallback SSH key exists (created by configs/ssh/setup.sh) ---
+if [ ! -f ~/.ssh/id_ed25519 ]; then
+  yel_print "SSH key ~/.ssh/id_ed25519 not found."
+  yel_print "Run settop.sh first to set up the fallback SSH key."
+  exit 1
+fi
+grn_print "Using existing SSH key: ~/.ssh/id_ed25519"
+
+# --- 2. Create github.conf in config.d/ (scopes key to github.com only) ---
+# Note: sshCommand in gitconfig overrides this for git operations.
+# This file is used for ssh command testing (e.g., ssh -T git@github.com).
+GITHUB_CONF="$HOME/.ssh/config.d/github.conf"
+grn_print "Writing $GITHUB_CONF (overwrites on re-run)..."
+cat > "$GITHUB_CONF" << EOF
+Host github.com
+    HostName github.com
+    User git
+    IdentityFile ~/.ssh/id_ed25519
+    AddKeysToAgent yes
+    UseKeychain yes
+    IdentitiesOnly yes
+EOF
+chmod 600 "$GITHUB_CONF"
+
+# --- 2b. GitHub per-project gitconfig with includeIf ---
+DOTFILES_GITCONFIG="$HOME/.dotfiles/git/gitconfig"
+
+# Prompt for GitHub email
+DEFAULT_GITHUB_EMAIL=$(git config --global user.email 2>/dev/null)
+grn_print "Enter your GitHub email or press Enter to use [$DEFAULT_GITHUB_EMAIL]:"
+read -r GITHUB_EMAIL
+GITHUB_EMAIL=${GITHUB_EMAIL:-$DEFAULT_GITHUB_EMAIL}
+if [ -z "$GITHUB_EMAIL" ]; then
+  yel_print "GitHub email cannot be empty."
+  exit 1
+fi
+
+# Prompt for GitHub project directories (space-separated, default ~/projects/ryanhedges)
+grn_print "Enter GitHub project directories (space-separated, or press Enter for [$HOME/projects/ryanhedges]):"
+read -r GITHUB_DIRS_INPUT
+GITHUB_DIRS=${GITHUB_DIRS_INPUT:-"$HOME/projects/ryanhedges"}
+
+GITHUB_DIR_ARRAY=()
+for dir in $GITHUB_DIRS; do
+  dir="${dir/#\~/$HOME}"
+  if [ -d "$dir" ]; then
+    dir=$(cd "$dir" && pwd)
+  fi
+  dir="${dir%/}/"  # trailing / required for gitdir: matching
+  GITHUB_DIR_ARRAY+=("$dir")
+done
+
+# Create per-account gitconfig for GitHub
+GITHUB_GITCONFIG="$HOME/.dotfiles/git/gitconfig-github"
+grn_print "Writing $GITHUB_GITCONFIG (overwrites on re-run)..."
+cat > "$GITHUB_GITCONFIG" << EOF
+[user]
+    email = $GITHUB_EMAIL
+
+[core]
+    # sshCommand is required for multi-account support on the same host (e.g., multiple GitHub accounts).
+    # SSH config (config.d/*.conf) routes by hostname only — it cannot distinguish between two accounts
+    # on github.com. git's sshCommand routes by directory via the includeIf in gitconfig, ensuring
+    # the correct key is used per project regardless of what the SSH agent has loaded.
+    # The config.d file is still used for direct SSH testing (e.g., ssh -T git@github.com).
+    sshCommand = "ssh -i ~/.ssh/id_ed25519 -o IdentitiesOnly=yes -F /dev/null"
+EOF
+
+# Add includeIf entries for each GitHub project directory
+for dir in "${GITHUB_DIR_ARRAY[@]}"; do
+  INCLUDE_PATH="includeIf.\"gitdir:$dir\""
+  if git config --file "$DOTFILES_GITCONFIG" --get "$INCLUDE_PATH".path &>/dev/null; then
+    yel_print "includeIf for $dir already exists in $DOTFILES_GITCONFIG. Skipping."
+  else
+    grn_print "Adding includeIf for $dir to $DOTFILES_GITCONFIG..."
+    git config --file "$DOTFILES_GITCONFIG" --add "$INCLUDE_PATH".path "$GITHUB_GITCONFIG"
+  fi
+done
+
+# Ensure default user.email exists in main gitconfig (for repos not matching any includeIf)
+if ! git config --file "$DOTFILES_GITCONFIG" user.email &>/dev/null; then
+  grn_print "Enter your default git email (for repos not matching any includeIf):"
+  read -r DEFAULT_EMAIL
+  git config --file "$DOTFILES_GITCONFIG" user.email "$DEFAULT_EMAIL"
+  grn_print "Default email set in $DOTFILES_GITCONFIG"
+else
+  yel_print "Default user.email already set in $DOTFILES_GITCONFIG"
+fi
+
+# --- 3. Prompt for key nickname (hostname as default) ---
 DEFAULT_NICKNAME=$(scutil --get ComputerName 2>/dev/null || hostname)
 grn_print "Enter a nickname for this machine's SSH keys or press Enter to use [$DEFAULT_NICKNAME]:"
 read -r NICKNAME
 NICKNAME=${NICKNAME:-$DEFAULT_NICKNAME}
 grn_print "Using key nickname: $NICKNAME"
 
-# --- 2. Authenticate gh CLI with required scopes ---
+# --- 4. Authenticate gh CLI with required scopes ---
 REQUIRED_SCOPES="admin:public_key,admin:ssh_signing_key"
 if ! gh auth status &>/dev/null; then
   yel_print "════════════════════════════════════════════════════"
@@ -24,7 +117,7 @@ else
   grn_print "gh CLI already authenticated"
 fi
 
-# --- 2b. Refresh token if missing SSH key management scopes ---
+# --- 4b. Refresh token if missing SSH key management scopes ---
 AUTH_STATUS=$(gh auth status 2>&1)
 MISSING_SCOPES=""
 for scope in admin:public_key admin:ssh_signing_key; do
@@ -42,7 +135,7 @@ if [ -n "$MISSING_SCOPES" ]; then
   grn_print "Token refreshed with $MISSING_SCOPES scope(s)"
 fi
 
-# --- 3. Add key to GitHub as AUTH type (title-based duplicate check) ---
+# --- 5. Add key to GitHub as AUTH type (title-based duplicate check) ---
 AUTH_TITLE="auth-$NICKNAME"
 if gh ssh-key list 2>/dev/null | grep -q "$AUTH_TITLE"; then
   yel_print "Authentication key '$AUTH_TITLE' already on GitHub, skipping"
@@ -54,7 +147,7 @@ else
   fi
 fi
 
-# --- 4. Add key to GitHub as SIGNING type (title-based duplicate check) ---
+# --- 6. Add key to GitHub as SIGNING type (title-based duplicate check) ---
 SIGN_TITLE="signing-$NICKNAME"
 if gh ssh-key list 2>/dev/null | grep -q "$SIGN_TITLE"; then
   yel_print "Signing key '$SIGN_TITLE' already on GitHub, skipping"
@@ -66,7 +159,7 @@ else
   fi
 fi
 
-# --- 5. Verify Git config (managed by dotfiles) ---
+# --- 7. Verify Git config (managed by dotfiles) ---
 grn_print "Git signing config:"
 if [ -d ~/.dotfiles ] && [ -L ~/.gitconfig ]; then
   grn_print "  ~/.gitconfig -> $(readlink ~/.gitconfig)"
