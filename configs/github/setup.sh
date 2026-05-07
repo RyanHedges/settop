@@ -72,14 +72,18 @@ cat > "$GITHUB_GITCONFIG" << EOF
     sshCommand = "ssh -i ~/.ssh/id_ed25519 -o IdentitiesOnly=yes -F /dev/null"
 EOF
 
-# Add includeIf entries for each GitHub project directory
+# Add includeIf entries for each GitHub project directory.
+# The git config key format is: includeIf.gitdir:<path>.path
+# git config writes the quotes around the condition automatically — do NOT
+# add them in the key string or git will double-escape them, producing
+# [includeIf "\"gitdir:...\"""] which is invalid and never matches.
 for dir in "${GITHUB_DIR_ARRAY[@]}"; do
-  INCLUDE_PATH="includeIf.\"gitdir:$dir\""
-  if git config --file "$DOTFILES_GITCONFIG" --get "$INCLUDE_PATH".path &>/dev/null; then
+  INCLUDE_KEY="includeIf.gitdir:${dir}.path"
+  if git config --file "$DOTFILES_GITCONFIG" --get "$INCLUDE_KEY" &>/dev/null; then
     yel_print "includeIf for $dir already exists in $DOTFILES_GITCONFIG. Skipping."
   else
     grn_print "Adding includeIf for $dir to $DOTFILES_GITCONFIG..."
-    git config --file "$DOTFILES_GITCONFIG" --add "$INCLUDE_PATH".path "$GITHUB_GITCONFIG"
+    git config --file "$DOTFILES_GITCONFIG" --add "$INCLUDE_KEY" "$GITHUB_GITCONFIG"
   fi
 done
 
