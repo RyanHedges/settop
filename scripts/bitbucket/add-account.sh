@@ -171,15 +171,13 @@ grn_print "Per-account gitconfig written to $GITCONFIG_FILE"
 # ---- Add includeIf to ~/.dotfiles/git/gitconfig (idempotent) ----
 
 DOTFILES_GITCONFIG="$HOME/.dotfiles/git/gitconfig"
-# Write directly to the file rather than using `git config --add` because
-# git config double-escapes the quotes in the includeIf key, producing
-# [includeIf "\"gitdir:...\"""] which git then fails to match.
-# Absolute path is required — git does not expand ~ in gitdir conditions.
-if grep -qF "gitdir:$PROJECT_DIR" "$DOTFILES_GITCONFIG" 2>/dev/null; then
+# git does not expand ~, so absolute path is required for includeIf gitdir matching
+INCLUDE_PATH="includeIf.\"gitdir:$PROJECT_DIR\""
+if git config --file "$DOTFILES_GITCONFIG" --get "$INCLUDE_PATH".path &>/dev/null; then
   yel_print "includeIf for $PROJECT_DIR already exists in $DOTFILES_GITCONFIG. Skipping."
 else
   grn_print "Adding includeIf to $DOTFILES_GITCONFIG..."
-  printf '[includeIf "gitdir:%s"]\n\tpath = %s\n' "$PROJECT_DIR" "$GITCONFIG_FILE" >> "$DOTFILES_GITCONFIG"
+  git config --file "$DOTFILES_GITCONFIG" --add "$INCLUDE_PATH".path "$GITCONFIG_FILE"
   grn_print "includeIf added."
 fi
 
