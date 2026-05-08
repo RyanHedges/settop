@@ -401,6 +401,12 @@ else
   xcode-select --install
 fi
 
+# ---- Configure Night Shift ----
+# --------------------------------
+# Night Shift configuration uses Swift, so run after Xcode has been installed.
+configure_app night-shift
+
+
 # ---- Finish Setup ----
 # ----------------------
 # https://budavariam.github.io/asciiart-text/
