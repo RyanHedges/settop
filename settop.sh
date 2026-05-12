@@ -187,13 +187,6 @@ gem update --system
 
 gem_install_or_update 'bundler'
 
-# ---- Finder Setup ----
-# ----------------------
-blue_pprint "Setting up Finder..."
-grn_print "Showing hidden files"
-defaults write com.apple.finder AppleShowAllFiles -bool true
-killall Finder
-
 # ---- Font Setup ----
 # --------------------
 blue_pprint "Installing Fonts..."
@@ -225,56 +218,11 @@ else
   yel_print "Using existing $HOME/.nvm"
 fi
 
-# ---- Configure Finder ----
-# --------------------------
-blue_pprint "Configuring Finder..."
-# https://github.com/yannbertrand/macos-defaults/blob/e03f6efba91e57c33846aec87eee8f205b20329f/docs/finder/appleshowallextensions.md
-grn_print "Show all filename extensions..."
-defaults write NSGlobalDomain AppleShowAllExtensions -bool true
-
-# https://github.com/yannbertrand/macos-defaults/blob/e03f6efba91e57c33846aec87eee8f205b20329f/docs/finder/fxremoveoldtrashitems.md
-grn_print "Remove items from the Trash after 30 days..."
-defaults write com.apple.finder FXRemoveOldTrashItems -bool true
-
-# https://github.com/yannbertrand/macos-defaults/blob/e03f6efba91e57c33846aec87eee8f205b20329f/docs/finder/showpathbar.md
-grn_print "Show path bar..."
-defaults write com.apple.finder "ShowPathbar" -bool true
-
-# https://github.com/yannbertrand/macos-defaults/blob/e03f6efba91e57c33846aec87eee8f205b20329f/docs/finder/fxpreferredviewstyle.md
-grn_print "Set default view style for folders to Column view..."
-defaults write com.apple.finder "FXPreferredViewStyle" -string "clmv"
-
-# https://github.com/yannbertrand/macos-defaults/blob/e03f6efba91e57c33846aec87eee8f205b20329f/docs/finder/appleshowallfiles.md
-grn_print "Show hidden files inside the Finder..."
-defaults write com.apple.finder "AppleShowAllFiles" -bool "true"
-
-# https://github.com/yannbertrand/macos-defaults/blob/e03f6efba91e57c33846aec87eee8f205b20329f/docs/keyboard/applepressandholdenabled.md#set-to-false
-grn_print "Show hidden files inside the Finder..."
-defaults write NSGlobalDomain "ApplePressAndHoldEnabled" -bool "false"
-
-grn_print "Applying changes to Finder with killall..."
-killall Finder
-
-# set a very fast repeat (e.g. 1 = ~15 ms between repeats)
-grn_print "Increase key repeat rate..."
-defaults write NSGlobalDomain KeyRepeat -int 1
-
-# set a short delay until repeat (e.g. 15 = ~225 ms delay)
-grn_print "Decrease the delay until key repeat..."
-defaults write NSGlobalDomain InitialKeyRepeat -int 15
-
-grn_print "Update appearance to Light/Dark switching..."
-defaults write -g AppleInterfaceStyleSwitchesAutomatically -bool true
-
-grn_print "Show precentage on battery..."
-defaults write com.apple.menuextra.battery ShowPercent -string "YES"
-defaults -currentHost write com.apple.controlcenter BatteryShowInMenuBar -bool true
-defaults -currentHost write com.apple.controlcenter BatteryShowPercentage -bool true
-defaults -currentHost write com.apple.controlcenter Sound -int 18
-
-blue_pprint "Run killall SystemUIServer and ControlCenter..."
-killall SystemUIServer
-killall ControlCenter
+# ---- Configure macOS defaults ----
+# --------------------------------
+configure_app macos-finder
+configure_app macos-keyboard
+configure_app macos-ui
 
 
 brew_install_cask() {
