@@ -17,6 +17,11 @@ yel_print() {
   printf "\e[33m%s\e[0m\n" "$msg"
 }
 
+red_print() {
+  local msg="$1"; shift
+  printf "\e[31m%s\e[0m\n" "$msg"
+}
+
 blue_print() {
   local msg="$1"; shift
   printf "\e[34m%s\e[0m\n" "$msg"
