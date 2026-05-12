@@ -45,3 +45,57 @@ if [ "$CURRENT_PRESS_HOLD" != "0" ] && [ "$CURRENT_PRESS_HOLD" != "false" ] && [
 else
   yel_print "ApplePressAndHoldEnabled already $TARGET_PRESS_HOLD. Skipping..."
 fi
+
+# Remap Caps Lock to Control in macOS System Settings (UI Source of Truth)
+# We mutate ByHost GlobalPreferences directly so the built-in keyboard works
+# and the macOS UI shows the correct mapping.
+# See README.md for why we use this split-brain approach.
+blue_pprint "Remapping Caps Lock to Control for built-in keyboard..."
+
+# Find the internal Apple keyboard vendor and product ID
+VENDOR_ID=$(ioreg -n IOHIDKeyboard -r | awk '$2 == "\"VendorID\"" { print $4; exit }')
+PRODUCT_ID=$(ioreg -n IOHIDKeyboard -r | awk '$2 == "\"ProductID\"" { print $4; exit }')
+
+PLIST_KEYS=("com.apple.keyboard.modifiermapping.0-0-0")
+if [ -n "$VENDOR_ID" ] && [ -n "$PRODUCT_ID" ]; then
+  PLIST_KEYS+=("com.apple.keyboard.modifiermapping.${VENDOR_ID}-${PRODUCT_ID}-0")
+fi
+
+for PLIST_KEY in "${PLIST_KEYS[@]}"; do
+  ALREADY_MAPPED=$(python3 -c "
+import sys, plistlib, subprocess
+try:
+    p = subprocess.run(['defaults', '-currentHost', 'export', '-g', '-'], capture_output=True, check=True)
+    data = plistlib.loads(p.stdout)
+    mappings = data.get('${PLIST_KEY}', [])
+    for m in mappings:
+        if m.get('HIDKeyboardModifierMappingSrc') == 30064771129 and m.get('HIDKeyboardModifierMappingDst') == 30064771296:
+            print('true')
+            sys.exit(0)
+except Exception:
+    pass
+print('false')
+")
+
+  if [ "$ALREADY_MAPPED" != "true" ]; then
+    grn_print "Setting Caps Lock -> Control in System Settings for ${PLIST_KEY}..."
+    defaults -currentHost write -g "${PLIST_KEY}" -array '<dict><key>HIDKeyboardModifierMappingSrc</key><integer>30064771129</integer><key>HIDKeyboardModifierMappingDst</key><integer>30064771296</integer></dict>'
+    require_restart "Keyboard: Remapped Caps Lock to Control in System Settings"
+  else
+    yel_print "Caps Lock already mapped to Control in System Settings for ${PLIST_KEY}. Skipping..."
+  fi
+done
+
+# Load the global hidutil LaunchAgent (symlinked by dotfiles)
+# This ensures external keyboards automatically sync with the UI setting.
+AGENT_PLIST="$HOME/Library/LaunchAgents/com.local.KeyRemapping.plist"
+if [ -f "$AGENT_PLIST" ]; then
+  if launchctl list | grep -q "com.local.KeyRemapping"; then
+    yel_print "com.local.KeyRemapping LaunchAgent already loaded. Skipping..."
+  else
+    grn_print "Loading com.local.KeyRemapping LaunchAgent..."
+    launchctl load "$AGENT_PLIST" || red_print "Failed to load $AGENT_PLIST"
+  fi
+else
+  red_print "Warning: $AGENT_PLIST not found! Make sure ~/.dotfiles are installed."
+fi
