@@ -224,7 +224,6 @@ fi
 configure_app macos-finder
 configure_app macos-keyboard
 configure_app macos-ui
-configure_app macos-dock
 
 
 brew_install_cask() {
@@ -352,6 +351,12 @@ fi
 # --------------------------------
 # Night Shift configuration uses Swift, so run after Xcode has been installed.
 configure_app night-shift
+
+# ---- Configure macOS Dock ----
+# ------------------------------
+# Dock configuration must run after all applications (including casks) have been
+# installed so dockutil can verify they exist on disk before pinning them.
+configure_app macos-dock
 
 
 # ---- Finish Setup ----
