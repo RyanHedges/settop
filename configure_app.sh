@@ -6,7 +6,7 @@
 
 configure_app() {
   local name="$1"
-  local config_file="$SCRIPT_DIR/configs/$name/setup.sh"
+  local config_file="$SETTOP_ROOT/configs/$name/setup.sh"
 
   if [ -f "$config_file" ]; then
     source "$config_file"

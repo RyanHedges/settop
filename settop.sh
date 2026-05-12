@@ -2,19 +2,16 @@
 
 set -e
 
-# https://stackoverflow.com/a/246128
-SOURCE=${BASH_SOURCE[0]}
-while [ -L "$SOURCE" ]; do
-  # resolve $SOURCE until the file is no longer a symlink
-  DIR=$( cd -P "$( dirname "$SOURCE" )" >/dev/null 2>&1 && pwd )
-  SOURCE=$(readlink "$SOURCE")
-  # if $SOURCE was a relative symlink, resolve it relative to the symlink’s dir
-  [[ $SOURCE != /* ]] && SOURCE=$DIR/$SOURCE
-done
-SCRIPT_DIR=$( cd -P "$( dirname "$SOURCE" )" >/dev/null 2>&1 && pwd )
+# Robustly resolve the symlink to find the true project root
+SOURCE="${BASH_SOURCE[0]:-$0}"
+while [ -L "$SOURCE" ]; do DIR="$(cd -P "$(dirname "$SOURCE")" && pwd)"; SOURCE="$(readlink "$SOURCE")"; [[ $SOURCE != /* ]] && SOURCE="$DIR/$SOURCE"; done
+SETTOP_ROOT="$(cd -P "$(dirname "$SOURCE")" && pwd)"
 
-source "$SCRIPT_DIR/colors.sh"
-source "$SCRIPT_DIR/configure_app.sh"
+source "$SETTOP_ROOT/import.sh"
+
+import "colors.sh"
+import "state.sh"
+import "configure_app.sh"
 
 # https://budavariam.github.io/asciiart-text/
 # DOS Rebel
