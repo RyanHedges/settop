@@ -223,6 +223,7 @@ fi
 configure_app macos-finder
 configure_app macos-keyboard
 configure_app macos-ui
+configure_app macos-dock
 
 
 brew_install_cask() {
