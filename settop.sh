@@ -65,6 +65,7 @@ configure_app github
 brew_install gifski
 brew_install vim
 brew_install mas
+brew_install dockutil
 
 if ! brew tap | grep -q '^drewdeponte/oss$'; then
   grn_print 'Brew tapping "drewdeponte/oss"...'
