@@ -31,7 +31,7 @@ TARGET_APPS=(
   "/System/Applications/Mail.app"
   "/System/Applications/Messages.app"
   "/System/Applications/Reminders.app"
-  "/Applications/NotePlan 3.app"
+  "/Applications/NotePlan.app"
   "/Applications/Zed.app"
   "/Applications/Ghostty.app"
   "/Applications/Sublime Merge.app"
@@ -43,14 +43,6 @@ TARGET_APPS=(
 # Extract labels of target apps for comparison
 TARGET_LABELS=()
 for app_path in "${TARGET_APPS[@]}"; do
-  # Fallback logic for NotePlan variations
-  if [ "$app_path" = "/Applications/NotePlan 3.app" ]; then
-    if [ ! -d "/Applications/NotePlan 3.app" ] && [ -d "/Applications/NotePlan.app" ]; then
-      app_path="/Applications/NotePlan.app"
-    elif [ ! -d "/Applications/NotePlan 3.app" ] && [ -d "/Applications/Setapp/NotePlan.app" ]; then
-      app_path="/Applications/Setapp/NotePlan.app"
-    fi
-  fi
   TARGET_LABELS+=("$(basename "$app_path" .app)")
 done
 
@@ -81,17 +73,12 @@ done <<< "$CURRENT_DOCK_APPS"
 # We iterate through our target list, using index for exact ordering.
 for i in "${!TARGET_APPS[@]}"; do
   app_path="${TARGET_APPS[$i]}"
-  
-  # Resolve exact NotePlan path
-  if [ "$app_path" = "/Applications/NotePlan 3.app" ]; then
-    if [ ! -d "/Applications/NotePlan 3.app" ] && [ -d "/Applications/NotePlan.app" ]; then
-      app_path="/Applications/NotePlan.app"
-    elif [ ! -d "/Applications/NotePlan 3.app" ] && [ -d "/Applications/Setapp/NotePlan.app" ]; then
-      app_path="/Applications/Setapp/NotePlan.app"
-    fi
-  fi
-
   app_label=$(basename "$app_path" .app)
+  
+  # Check if app is managed by Setapp instead of its primary location
+  if [ ! -e "$app_path" ] && [ -d "/Applications/Setapp/$app_label.app" ]; then
+    app_path="/Applications/Setapp/$app_label.app"
+  fi
   
   if [ ! -e "$app_path" ]; then
     red_print "App '$app_label' not found on system at $app_path. Skipping..."
