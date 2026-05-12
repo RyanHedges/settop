@@ -62,20 +62,14 @@ if [ -n "$VENDOR_ID" ] && [ -n "$PRODUCT_ID" ]; then
 fi
 
 for PLIST_KEY in "${PLIST_KEYS[@]}"; do
-  ALREADY_MAPPED=$(python3 -c "
-import sys, plistlib, subprocess
-try:
-    p = subprocess.run(['defaults', '-currentHost', 'export', '-g', '-'], capture_output=True, check=True)
-    data = plistlib.loads(p.stdout)
-    mappings = data.get('${PLIST_KEY}', [])
-    for m in mappings:
-        if m.get('HIDKeyboardModifierMappingSrc') == 30064771129 and m.get('HIDKeyboardModifierMappingDst') == 30064771296:
-            print('true')
-            sys.exit(0)
-except Exception:
-    pass
-print('false')
-")
+  MAPPING=$(defaults -currentHost read -g "${PLIST_KEY}" 2>/dev/null || echo "")
+  
+  if [[ "$MAPPING" == *"HIDKeyboardModifierMappingDst = 30064771296"* ]] && \
+     [[ "$MAPPING" == *"HIDKeyboardModifierMappingSrc = 30064771129"* ]]; then
+    ALREADY_MAPPED="true"
+  else
+    ALREADY_MAPPED="false"
+  fi
 
   if [ "$ALREADY_MAPPED" != "true" ]; then
     grn_print "Setting Caps Lock -> Control in System Settings for ${PLIST_KEY}..."
