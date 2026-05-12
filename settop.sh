@@ -219,13 +219,6 @@ else
   yel_print "Using existing $HOME/.nvm"
 fi
 
-# ---- Configure macOS defaults ----
-# --------------------------------
-configure_app macos-finder
-configure_app macos-keyboard
-configure_app macos-ui
-
-
 brew_install_cask() {
   local pkg="$1"; shift
   if ! brew ls --cask --versions $pkg >/dev/null; then
@@ -347,9 +340,13 @@ else
   xcode-select --install
 fi
 
-# ---- Configure Night Shift ----
-# --------------------------------
-# Night Shift configuration uses Swift, so run after Xcode has been installed.
+# ---- Configure macOS defaults ----
+# ----------------------------------
+# These configurations may use Swift (e.g. night-shift, macos-keyboard sync agent)
+# so they MUST be run after the Command-Line Tools have been installed.
+configure_app macos-finder
+configure_app macos-keyboard
+configure_app macos-ui
 configure_app night-shift
 
 # ---- Configure macOS Dock ----
