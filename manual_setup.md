@@ -6,7 +6,7 @@ doing this manually. Marked items should be covered by scripts...
 ## Update Keyboard
 - [x] System Settings > Keyboard > Change Key Repeat rate to `fast`
 - [x] System Settings > Keyboard > Change Delay Until Repeat to `Short`
-- [ ] System Settings > Keyboard > Keyboard Shortcuts... > Modifier Keys > Remap `Caps Lock key` to be `Control`
+- [x] System Settings > Keyboard > Keyboard Shortcuts... > Modifier Keys > Remap `Caps Lock key` to be `Control`
 
 ## Update Appearance
 - [x] System Settings > Appearance > Change Appearance to be `Auto`
