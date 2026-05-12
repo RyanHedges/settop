@@ -366,3 +366,19 @@ blue_pprint "  █████████  █████  █████   �
  blue_print "░░█████████  ░░████████   ░░█████████  ░░█████████  ██████████░░█████████ ░░█████████"
  blue_print " ░░░░░░░░░    ░░░░░░░░     ░░░░░░░░░    ░░░░░░░░░  ░░░░░░░░░░  ░░░░░░░░░   ░░░░░░░░░"
 pprint ""
+
+if [ ${#REQUIRES_RESTART_REASONS[@]} -gt 0 ]; then
+  pprint ""
+  yel_print "⚠️  A LOGOUT OR RESTART IS REQUIRED FOR THE FOLLOWING CHANGES TO TAKE EFFECT:"
+  for reason in "${REQUIRES_RESTART_REASONS[@]}"; do
+    yel_print "   - $reason"
+  done
+  pprint ""
+
+  read -p "$(printf '\e[33mWould you like to log out now to apply these changes? (y/N): \e[0m')" -n 1 -r
+  echo
+  if [[ $REPLY =~ ^[Yy]$ ]]; then
+    blue_print "Logging out..."
+    osascript -e 'tell application "System Events" to log out'
+  fi
+fi
