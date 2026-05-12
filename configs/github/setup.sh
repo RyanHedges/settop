@@ -1,3 +1,6 @@
+source "$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)/import.sh"
+import "colors.sh"
+
 blue_pprint "Configuring GitHub with SSH keys..."
 
 # NOTE: This script is sourced by settop.sh. Any exit 1 here terminates the

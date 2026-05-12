@@ -1,3 +1,6 @@
+source "$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)/import.sh"
+import "colors.sh"
+
 blue_pprint "Configuring SSH keys (fallback/generic key)..."
 
 # --- 1. Generate SSH key if missing (used as fallback for all hosts) ---
