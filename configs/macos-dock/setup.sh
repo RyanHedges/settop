@@ -89,13 +89,14 @@ for i in "${!TARGET_APPS[@]}"; do
   # So our 0th app is position 2, 1st is 3, etc.
   target_position=$((i + 2))
   
-  if ! dockutil --find "$app_label" >/dev/null 2>&1; then
+  find_output=$(dockutil --find "$app_label" 2>/dev/null || echo "not found")
+  if ! echo "$find_output" | grep -q "persistent-apps"; then
     grn_print "Adding '$app_label' to Dock..."
     dockutil --add "$app_path" --position "$target_position" --no-restart >/dev/null 2>&1
     NEEDS_DOCK_RESTART=true
   else
-    # App IS in the dock. Check if it's in the correct slot.
-    current_position=$(dockutil --find "$app_label" | grep -oE 'slot [0-9]+' | awk '{print $2}')
+    # App IS in the persistent dock. Check if it's in the correct slot.
+    current_position=$(echo "$find_output" | grep -oE 'slot [0-9]+' | awk '{print $2}')
     
     if [ "$current_position" != "$target_position" ]; then
       grn_print "Moving '$app_label' to correct position ($target_position)..."
