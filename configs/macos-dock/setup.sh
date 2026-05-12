@@ -85,13 +85,13 @@ for i in "${!TARGET_APPS[@]}"; do
     continue
   fi
 
-  # dockutil uses 1-based indexing for --position, and Finder is always position 1.
-  # So our 0th app is position 2, 1st is 3, etc.
-  target_position=$((i + 2))
+  # dockutil uses 1-based indexing for --position, and it does not count Finder.
+  # So our 0th app is position 1, 1st is 2, etc.
+  target_position=$((i + 1))
   
   find_output=$(dockutil --find "$app_label" 2>/dev/null || echo "not found")
   if ! echo "$find_output" | grep -q "persistent-apps"; then
-    grn_print "Adding '$app_label' to Dock..."
+    grn_print "Adding '$app_label' to Dock at position $target_position..."
     dockutil --add "$app_path" --position "$target_position" --no-restart >/dev/null 2>&1
     NEEDS_DOCK_RESTART=true
   else
@@ -99,9 +99,11 @@ for i in "${!TARGET_APPS[@]}"; do
     current_position=$(echo "$find_output" | grep -oE 'slot [0-9]+' | awk '{print $2}')
     
     if [ "$current_position" != "$target_position" ]; then
-      grn_print "Moving '$app_label' to correct position ($target_position)..."
+      grn_print "Moving '$app_label' from position $current_position to position $target_position..."
       dockutil --move "$app_label" --position "$target_position" --no-restart >/dev/null 2>&1
       NEEDS_DOCK_RESTART=true
+    else
+      yel_print "'$app_label' already in correct position ($target_position). Skipping..."
     fi
   fi
 done
