@@ -46,7 +46,7 @@ applications, and configure them as needed.
 - [ ] Preferences > Advanced > Clear the system clipboard too ON
 
 ### Sublime Merge
-- [ ] Add License
+- [x] Add License
         * Get the license from it's location (e.g. secrets manager, email, usb, etc.)
         * Open Sublime Merge, and select the menu item Help / Enter License
         * Copy the license above (including the BEGIN LICENSE and END LICENSE lines) and paste them into the license box. Press OK and Sublime Merge will enter into licensed mode: You should see that UNREGISTERED is no longer in the window title.
