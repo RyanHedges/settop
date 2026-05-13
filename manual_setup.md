@@ -18,7 +18,8 @@ doing this manually. Marked items should be covered by scripts...
   to` `Fill`. (NSGlobalDomain AppleActionOnDoubleClick=Fill)
 - [x] System Settings > Displays > Night Shift... > Set Schedule to `Sunset to
   Sunrise` (Note: You may need to also turn on location services to do this.)
-- [ ] System Settings > Displays > Set Resolution to `More Space`
+- [x] System Settings > Displays > Set Resolution to `More Space`
+  (configs/macos-display/display-resolution.swift — change `target` to `.recommended` or `.largerText` to use a different preset)
 
 ## Terminal
 - [ ] Import the `Jellybeans-RHedges.terminal` to terminal `Preferences` -> `Profiles`

@@ -350,6 +350,7 @@ configure_app macos-finder
 configure_app macos-keyboard
 configure_app macos-ui
 configure_app macos-clock
+configure_app macos-display
 configure_app night-shift
 
 # ---- Configure macOS Dock ----
