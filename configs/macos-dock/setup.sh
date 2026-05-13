@@ -108,6 +108,20 @@ for i in "${!TARGET_APPS[@]}"; do
   fi
 done
 
+# NSGlobalDomain AppleActionOnDoubleClick: Action when double-clicking a window title bar.
+# Values: "None", "Minimize", "Maximize", "Fill"
+# "Fill" expands the window to fill the screen as a regular window (not full-screen mode).
+# Docs: System Settings > Desktop & Dock > Double-click a window's title bar to
+TARGET_DOUBLE_CLICK="Fill"
+CURRENT_DOUBLE_CLICK=$(defaults read NSGlobalDomain AppleActionOnDoubleClick 2>/dev/null || echo "")
+if [ "$CURRENT_DOUBLE_CLICK" != "$TARGET_DOUBLE_CLICK" ]; then
+  grn_print "Set double-click title bar action to $TARGET_DOUBLE_CLICK..."
+  defaults write NSGlobalDomain AppleActionOnDoubleClick -string "$TARGET_DOUBLE_CLICK" || red_print "Failed to set AppleActionOnDoubleClick"
+  NEEDS_DOCK_RESTART=true
+else
+  yel_print "AppleActionOnDoubleClick already $TARGET_DOUBLE_CLICK. Skipping..."
+fi
+
 if [ "$NEEDS_DOCK_RESTART" = true ]; then
   blue_pprint "Applying Dock changes by running killall Dock..."
   killall Dock || red_print "Failed to kill Dock"

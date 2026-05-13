@@ -14,8 +14,8 @@ doing this manually. Marked items should be covered by scripts...
 - [x] System Settings > Control Center > Clock Options... — ShowDate=always,
   ShowDayOfWeek=true, IsAnalog=false, ShowAMPM=true, FlashDateSeparators=false,
   ShowSeconds=true. Result: `Tue May 12 9:49:23 PM`
-- [ ] System Settings > Desktop & Dock > Set `Double-click a window's title bar
-  to` `Fill`.
+- [x] System Settings > Desktop & Dock > Set `Double-click a window's title bar
+  to` `Fill`. (NSGlobalDomain AppleActionOnDoubleClick=Fill)
 - [x] System Settings > Displays > Night Shift... > Set Schedule to `Sunset to
   Sunrise` (Note: You may need to also turn on location services to do this.)
 - [ ] System Settings > Displays > Set Resolution to `More Space`
