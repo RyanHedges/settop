@@ -11,8 +11,9 @@ doing this manually. Marked items should be covered by scripts...
 ## Update Appearance
 - [x] System Settings > Appearance > Change Appearance to be `Auto`
 - [x] System Settings > Control Center > Battery > Turn ON `Show Percentage`
-- [ ] System Settings > Control Center > Clock Options... > Turn ON `Display the
-time with seconds`
+- [x] System Settings > Control Center > Clock Options... — ShowDate=always,
+  ShowDayOfWeek=true, IsAnalog=false, ShowAMPM=true, FlashDateSeparators=false,
+  ShowSeconds=true. Result: `Tue May 12 9:49:23 PM`
 - [ ] System Settings > Desktop & Dock > Set `Double-click a window's title bar
   to` `Fill`.
 - [x] System Settings > Displays > Night Shift... > Set Schedule to `Sunset to
