@@ -53,7 +53,3 @@ applications, and configure them as needed.
 
 ### Rectangle
 - [ ] Settings... > Launch on login ON
-
-
-
-
