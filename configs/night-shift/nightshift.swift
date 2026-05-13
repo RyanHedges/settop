@@ -78,40 +78,71 @@ func formatTimeAMPM(_ t: Time) -> String {
     return String(format: "%d:%02d %@", h, t.minute, period)
 }
 
-let currentStatus = fetchStatus()
-let currentStrength = fetchStrength()
+// Each case represents a complete, self-consistent Night Shift configuration.
+// Invalid combinations (e.g. a manual override on top of a sunset schedule)
+// are impossible to express — pick one preset and all derived settings follow.
+//
+//   .sunsetToSunrise    — OS auto-enables at sunset, disables at sunrise (recommended)
+//   .customSchedule     — OS auto-enables/disables on a fixed daily time window
+//   .manualUntilSunrise — no recurring schedule; manually on until tonight's sunrise
+//   .off                — Night Shift disabled entirely
+enum NightShiftPreset {
+    case sunsetToSunrise(strength: Float)
+    case customSchedule(from: Time, to: Time, strength: Float)
+    case manualUntilSunrise(strength: Float)
+    case off
+}
 
 // ====== CONFIGURATION ======
 // ===========================
-let desiredStrength: Float = 1.0  // 0.0 (less warm) to 1.0 (most warm)
-let desiredMode: Int32 = 1  // 0: Off, 1: Sunset to Sunrise, 2: Custom Schedule
-let desiredEnabled: Int8 = 0  // 0: "Turn on until sunrise" OFF, 1: "Turn on until sunrise" ON
+let preset: NightShiftPreset = .sunsetToSunrise(strength: 1.0)
+// let preset: NightShiftPreset = .customSchedule(
+//     from: makeTime(hour: 10, minute: 0, period: .pm),
+//     to:   makeTime(hour: 7,  minute: 0, period: .am),
+//     strength: 1.0
+// )
+// let preset: NightShiftPreset = .manualUntilSunrise(strength: 1.0)
+// let preset: NightShiftPreset = .off
+// ===========================
+// ===========================
 
-// Only applicable if desiredMode == 2
-let customScheduleFrom = makeTime(hour: 10, minute: 0, period: .pm)
-let customScheduleTo = makeTime(hour: 7, minute: 0, period: .am)
-// ===========================
-// ===========================
+let currentStatus = fetchStatus()
+let currentStrength = fetchStrength()
 
 var changed = false
+
+// Apply mode
+let desiredMode: Int32
+switch preset {
+case .sunsetToSunrise:      desiredMode = 1
+case .customSchedule:       desiredMode = 2
+case .manualUntilSunrise:   desiredMode = 0
+case .off:                  desiredMode = 0
+}
 
 if currentStatus.mode != desiredMode {
     _ = applyMode(client, Selector(("setMode:")), desiredMode)
     changed = true
 }
 
-if currentStatus.enabled != desiredEnabled {
-    _ = applyEnabled(client, Selector(("setEnabled:")), desiredEnabled == 1)
+// Apply strength (not applicable for .off — Night Shift is disabled so warmth
+// has no visible effect and there is no meaningful value to preserve)
+let desiredStrength: Float?
+switch preset {
+case .sunsetToSunrise(let s):           desiredStrength = s
+case .customSchedule(_, _, let s):      desiredStrength = s
+case .manualUntilSunrise(let s):        desiredStrength = s
+case .off:                              desiredStrength = nil
+}
+
+if let strength = desiredStrength, abs(currentStrength - strength) > 0.01 {
+    _ = applyStrength(client, Selector(("setStrength:commit:")), strength, true)
     changed = true
 }
 
-if abs(currentStrength - desiredStrength) > 0.01 {
-    _ = applyStrength(client, Selector(("setStrength:commit:")), desiredStrength, true)
-    changed = true
-}
-
-if desiredMode == 2 {
-    var desiredSchedule = Schedule(fromTime: customScheduleFrom, toTime: customScheduleTo)
+// Apply custom schedule times (mode 2 only)
+if case .customSchedule(let from, let to, _) = preset {
+    var desiredSchedule = Schedule(fromTime: from, toTime: to)
     if currentStatus.schedule != desiredSchedule {
         _ = withUnsafePointer(to: &desiredSchedule) {
             applyScheduleFn(client, Selector(("setSchedule:")), UnsafeRawPointer($0))
@@ -120,17 +151,69 @@ if desiredMode == 2 {
     }
 }
 
-let modeDesc: String
-switch desiredMode {
-case 1: modeDesc = "Sunset to Sunrise"
-case 2:
-    let fromStr = formatTimeAMPM(customScheduleFrom)
-    let toStr = formatTimeAMPM(customScheduleTo)
-    modeDesc = "Custom Schedule (\(fromStr) to \(toStr))"
-default: modeDesc = "Off"
+// Apply enabled state.
+//
+// For scheduled presets (.sunsetToSunrise, .customSchedule), the OS manages
+// the enabled state automatically — it sets it ON at sunset/schedule-start and
+// OFF at sunrise/schedule-end. The `active` field in Status reflects whether
+// the current time falls within the active window (independent of any prior
+// override). Re-reading status after the mode is applied ensures we see the
+// correct active state even on a first-time run (setMode(1) at night
+// immediately activates the schedule).
+//
+// Deriving the desired enabled value from `active` rather than hardcoding 0
+// prevents the script from calling setEnabled(false) while the schedule has
+// Night Shift on, which would disable it mid-window and set a persistent
+// override flag (BlueLightReductionAlgoOverride) that blocks the schedule from
+// re-enabling it until the next sunset/sunrise transition.
+let statusForEnabled = (desiredMode == 1 || desiredMode == 2) ? fetchStatus() : currentStatus
+
+let desiredEnabled: Int8
+switch preset {
+case .sunsetToSunrise, .customSchedule:
+    // Follow the OS-computed active window; don't override the schedule state.
+    desiredEnabled = statusForEnabled.active
+case .manualUntilSunrise:
+    desiredEnabled = 1
+case .off:
+    desiredEnabled = 0
 }
-let strengthDesc = "\(Int(desiredStrength * 100))% warmth"
-let enabledDesc = desiredEnabled == 1 ? ", Manual Override ON" : ""
+
+if statusForEnabled.enabled != desiredEnabled {
+    _ = applyEnabled(client, Selector(("setEnabled:")), desiredEnabled == 1)
+    changed = true
+}
+
+// Build description
+let modeDesc: String
+switch preset {
+case .sunsetToSunrise:
+    modeDesc = "Sunset to Sunrise"
+case .customSchedule(let from, let to, _):
+    modeDesc = "Custom Schedule (\(formatTimeAMPM(from)) to \(formatTimeAMPM(to)))"
+case .manualUntilSunrise:
+    modeDesc = "Manual"
+case .off:
+    modeDesc = "Off"
+}
+
+let strengthDesc: String
+if let strength = desiredStrength {
+    strengthDesc = "\(Int(strength * 100))% warmth"
+} else {
+    strengthDesc = "warmth unchanged"
+}
+
+let enabledDesc: String
+switch preset {
+case .sunsetToSunrise, .customSchedule:
+    enabledDesc = desiredEnabled == 1 ? ", currently active" : ""
+case .manualUntilSunrise:
+    enabledDesc = ", Manual Override ON"
+case .off:
+    enabledDesc = ""
+}
+
 let desc = "\(modeDesc), \(strengthDesc)\(enabledDesc)"
 
 if changed {
