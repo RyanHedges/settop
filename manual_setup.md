@@ -15,7 +15,7 @@ doing this manually. Marked items should be covered by scripts...
 time with seconds`
 - [ ] System Settings > Desktop & Dock > Set `Double-click a window's title bar
   to` `Fill`.
-- [ ] System Settings > Displays > Night Shift... > Set Schedule to `Sunset to
+- [x] System Settings > Displays > Night Shift... > Set Schedule to `Sunset to
   Sunrise` (Note: You may need to also turn on location services to do this.)
 - [ ] System Settings > Displays > Set Resolution to `More Space`
 
