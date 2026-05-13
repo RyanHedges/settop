@@ -78,6 +78,54 @@ func formatTimeAMPM(_ t: Time) -> String {
     return String(format: "%d:%02d %@", h, t.minute, period)
 }
 
+// Returns true if it is currently daylight (Night Shift should be OFF),
+// false if it is nighttime (Night Shift should be ON), or nil if the OS
+// cannot determine the answer (e.g. location services are disabled).
+//
+// isDaylight is read from corebrightnessdiag — the same OS-computed value
+// the Night Shift daemon uses internally for its own sunset/sunrise schedule.
+// It is the only reliable signal for "are we in the nighttime window right now."
+//
+// status.active (AutoBlueReductionEnabled in CoreBrightness) is NOT a
+// time-of-day indicator — it is 1 whenever an automatic schedule mode is
+// configured (mode 1 or 2), day or night alike, and must not be used here.
+func getDaylightStatus() -> Bool? {
+    let process = Process()
+    process.executableURL = URL(fileURLWithPath: "/usr/libexec/corebrightnessdiag")
+    process.arguments = ["nightshift-internal"]
+    let pipe = Pipe()
+    process.standardOutput = pipe
+    process.standardError = Pipe()
+    do {
+        try process.run()
+        process.waitUntilExit()
+        let output = String(data: pipe.fileHandleForReading.readDataToEndOfFile(), encoding: .utf8) ?? ""
+        // "(null)" appears when location services are disabled and the OS has
+        // no sunrise/sunset data — treat this as indeterminate, not as daytime.
+        if output.contains("isDaylight = (null)") { return nil }
+        if output.contains("isDaylight = 1;")     { return true  }
+        if output.contains("isDaylight = 0;")     { return false }
+        return nil
+    } catch {
+        return nil
+    }
+}
+
+// Returns true if the current local time falls within a custom schedule window.
+// Handles overnight windows correctly (e.g. 10:00 PM to 7:00 AM, where
+// fromMinutes > toMinutes spans midnight).
+func isInCustomWindow(from: Time, to: Time) -> Bool {
+    let now = Calendar.current.dateComponents([.hour, .minute], from: Date())
+    let currentMinutes = (now.hour ?? 0) * 60 + (now.minute ?? 0)
+    let fromMinutes    = Int(from.hour) * 60 + Int(from.minute)
+    let toMinutes      = Int(to.hour)   * 60 + Int(to.minute)
+    if fromMinutes > toMinutes {
+        // Overnight: active from fromMinutes until midnight, and again from midnight until toMinutes
+        return currentMinutes >= fromMinutes || currentMinutes < toMinutes
+    }
+    return currentMinutes >= fromMinutes && currentMinutes < toMinutes
+}
+
 // Each case represents a complete, self-consistent Night Shift configuration.
 // Invalid combinations (e.g. a manual override on top of a sunset schedule)
 // are impossible to express — pick one preset and all derived settings follow.
@@ -110,8 +158,9 @@ let currentStatus = fetchStatus()
 let currentStrength = fetchStrength()
 
 var changed = false
+var daylightWarning = false
 
-// Apply mode
+// Derive the desired mode
 let desiredMode: Int32
 switch preset {
 case .sunsetToSunrise:      desiredMode = 1
@@ -120,9 +169,84 @@ case .manualUntilSunrise:   desiredMode = 0
 case .off:                  desiredMode = 0
 }
 
-if currentStatus.mode != desiredMode {
-    _ = applyMode(client, Selector(("setMode:")), desiredMode)
-    changed = true
+// Derive the desired enabled state from the current time.
+// For scheduled presets this is time-aware; for explicit presets it is constant.
+let desiredEnabled: Int8
+switch preset {
+case .sunsetToSunrise:
+    switch getDaylightStatus() {
+    case .some(true):   desiredEnabled = 0                  // daytime  — keep off
+    case .some(false):  desiredEnabled = 1                  // nighttime — keep on
+    case .none:
+        desiredEnabled = currentStatus.enabled              // unknown   — leave unchanged
+        daylightWarning = true
+    }
+case .customSchedule(let from, let to, _):
+    desiredEnabled = isInCustomWindow(from: from, to: to) ? 1 : 0
+case .manualUntilSunrise:
+    desiredEnabled = 1
+case .off:
+    desiredEnabled = 0
+}
+
+// Apply mode and enabled state.
+//
+// For scheduled presets (.sunsetToSunrise, .customSchedule), setEnabled is
+// never called. Any call to setEnabled writes a persistent
+// BlueLightReductionAlgoOverride into the CoreBrightness daemon that blocks
+// the OS schedule from self-correcting at the next natural sunset/sunrise event.
+//
+// Instead, when the enabled state is wrong (a stuck override from a prior bad
+// call), we repair it by toggling through mode=0 before reasserting the desired
+// mode. This resets AlgoOverride to 0, returning full OS control of the schedule.
+// Empirically verified: setMode(0) → setMode(n) always produces AlgoOverride=0.
+//
+// For explicit presets (.manualUntilSunrise, .off), setEnabled is appropriate
+// because these modes intentionally set a persistent state by design.
+switch preset {
+case .sunsetToSunrise, .customSchedule:
+    let modeWrong    = currentStatus.mode != desiredMode
+    let enabledWrong = !daylightWarning && currentStatus.enabled != desiredEnabled
+    if modeWrong || enabledWrong {
+        if !modeWrong {
+            // Mode is already correct but a stuck override is forcing the wrong
+            // enabled state — toggle through 0 to reset AlgoOverride.
+            _ = applyMode(client, Selector(("setMode:")), 0)
+        }
+        _ = applyMode(client, Selector(("setMode:")), desiredMode)
+        changed = true
+    }
+
+case .manualUntilSunrise:
+    if currentStatus.mode != desiredMode {
+        _ = applyMode(client, Selector(("setMode:")), desiredMode)
+        changed = true
+    }
+    if currentStatus.enabled != desiredEnabled {
+        _ = applyEnabled(client, Selector(("setEnabled:")), true)
+        changed = true
+    }
+
+case .off:
+    if currentStatus.mode != desiredMode {
+        _ = applyMode(client, Selector(("setMode:")), desiredMode)
+        changed = true
+    }
+    if currentStatus.enabled != desiredEnabled {
+        _ = applyEnabled(client, Selector(("setEnabled:")), false)
+        changed = true
+    }
+}
+
+// Apply custom schedule times (mode 2 only)
+if case .customSchedule(let from, let to, _) = preset {
+    var desiredSchedule = Schedule(fromTime: from, toTime: to)
+    if currentStatus.schedule != desiredSchedule {
+        _ = withUnsafePointer(to: &desiredSchedule) {
+            applyScheduleFn(client, Selector(("setSchedule:")), UnsafeRawPointer($0))
+        }
+        changed = true
+    }
 }
 
 // Apply strength (not applicable for .off — Night Shift is disabled so warmth
@@ -137,50 +261,6 @@ case .off:                              desiredStrength = nil
 
 if let strength = desiredStrength, abs(currentStrength - strength) > 0.01 {
     _ = applyStrength(client, Selector(("setStrength:commit:")), strength, true)
-    changed = true
-}
-
-// Apply custom schedule times (mode 2 only)
-if case .customSchedule(let from, let to, _) = preset {
-    var desiredSchedule = Schedule(fromTime: from, toTime: to)
-    if currentStatus.schedule != desiredSchedule {
-        _ = withUnsafePointer(to: &desiredSchedule) {
-            applyScheduleFn(client, Selector(("setSchedule:")), UnsafeRawPointer($0))
-        }
-        changed = true
-    }
-}
-
-// Apply enabled state.
-//
-// For scheduled presets (.sunsetToSunrise, .customSchedule), the OS manages
-// the enabled state automatically — it sets it ON at sunset/schedule-start and
-// OFF at sunrise/schedule-end. The `active` field in Status reflects whether
-// the current time falls within the active window (independent of any prior
-// override). Re-reading status after the mode is applied ensures we see the
-// correct active state even on a first-time run (setMode(1) at night
-// immediately activates the schedule).
-//
-// Deriving the desired enabled value from `active` rather than hardcoding 0
-// prevents the script from calling setEnabled(false) while the schedule has
-// Night Shift on, which would disable it mid-window and set a persistent
-// override flag (BlueLightReductionAlgoOverride) that blocks the schedule from
-// re-enabling it until the next sunset/sunrise transition.
-let statusForEnabled = (desiredMode == 1 || desiredMode == 2) ? fetchStatus() : currentStatus
-
-let desiredEnabled: Int8
-switch preset {
-case .sunsetToSunrise, .customSchedule:
-    // Follow the OS-computed active window; don't override the schedule state.
-    desiredEnabled = statusForEnabled.active
-case .manualUntilSunrise:
-    desiredEnabled = 1
-case .off:
-    desiredEnabled = 0
-}
-
-if statusForEnabled.enabled != desiredEnabled {
-    _ = applyEnabled(client, Selector(("setEnabled:")), desiredEnabled == 1)
     changed = true
 }
 
@@ -216,7 +296,10 @@ case .off:
 
 let desc = "\(modeDesc), \(strengthDesc)\(enabledDesc)"
 
-if changed {
+if daylightWarning {
+    let action = changed ? "partially configured" : "no changes needed, but"
+    print("WARNING|\(desc) — \(action): cannot determine daylight status (location services may be disabled); Night Shift enabled state left unchanged")
+} else if changed {
     print("CONFIGURED|\(desc)")
 } else {
     print("ALREADY_CONFIGURED|\(desc)")

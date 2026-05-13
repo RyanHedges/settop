@@ -17,6 +17,8 @@ if [[ "$STATE" == "CONFIGURED" ]]; then
   grn_print "Configured Night Shift ($DESC)."
 elif [[ "$STATE" == "ALREADY_CONFIGURED" ]]; then
   yel_print "Night Shift already configured ($DESC)."
+elif [[ "$STATE" == "WARNING" ]]; then
+  red_print "Night Shift warning — $DESC"
 else
   yel_print "Failed to configure Night Shift: $RESULT"
 fi
