@@ -268,6 +268,7 @@ brew_install_cask zoom
 # ------------------------------
 blue_pprint "Installing 1Password..."
 brew_install_cask 1password
+brew_install_cask 1password-cli
 
 # ---- Installing Postico ----
 # ----------------------------
