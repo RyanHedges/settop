@@ -359,6 +359,9 @@ configure_app night-shift
 # installed so dockutil can verify they exist on disk before pinning them.
 configure_app macos-dock
 
+# ---- Configure TextEdit ----
+# ----------------------------
+configure_app textedit
 
 # ---- Finish Setup ----
 # ----------------------
