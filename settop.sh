@@ -295,6 +295,7 @@ configure_app rectangle
 # ----------------------------------
 blue_pprint "Installing Sublime Merge..."
 brew_install_cask sublime-merge
+configure_app sublime-merge
 
 # ---- Installing Claude ----
 # ----------------------------
